@@ -1,0 +1,37 @@
+.table_sort {
+    counter-reset: trCount;
+    overflow: auto;
+    white-space: nowrap;
+}
+.table_sort tr td:first-child:before {
+    position:relative;
+    counter-increment: trCount;
+    content:counter(trCount);
+} 
+
+.table_sort th {
+    cursor: pointer;
+}
+
+.table_sort tbody tr:nth-child(even) {
+    background: #e3e3e3;
+}
+
+th.sorted[data-order="1"],
+th.sorted[data-order="-1"] {
+    position: relative;
+}
+
+th.sorted[data-order="1"]::after,
+th.sorted[data-order="-1"]::after {
+    right: 8px;
+    position: absolute;
+}
+
+th.sorted[data-order="-1"]::after {
+	content: "▼"
+}
+
+th.sorted[data-order="1"]::after {
+	content: "▲"
+}

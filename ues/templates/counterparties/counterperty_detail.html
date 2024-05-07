@@ -1,0 +1,49 @@
+<!-- templates/counterparties/counterparty_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ counterparty.short_name }}
+{% endblock title %}
+
+{% block content %}
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/table_sort.css' %}">
+  <script src="{% static 'js/table_sort.js' %}"></script>
+  <main>
+    <div class="row">
+      <div class="col-lg-3 col-md-12">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            Полное наименование: {{ counterparty.full_name }}
+          </li>
+          <li class="list-group-item">
+            Сокращенное наименование: {{ counterparty.short_name }}
+          </li>
+          <li class="list-group-item">
+            Юридический адрес: {{ counterparty.address }}
+          </li>
+          <li class="list-group-item">
+            ОГРН: {{ counterparty.main_state_registration_number }}
+          </li>
+          <li class="list-group-item">
+            ИНН: {{ counterparty.tax_identification_number }}
+          </li>
+          <li class="list-group-item">
+            КПП: {{ counterparty.registration_reason_code }}
+          </li>
+          <li class="list-group-item">
+            Контактный телефон: {{ counterparty.phone_number }}
+          </li>
+          <li class="list-group-item">
+            Электронная почта: {{ counterparty.email }}
+          </li>
+          <li class="list-group-item">
+            Руководитель организации:
+            {{ counterparty.job_title }}
+            {{ counterparty.person_full_name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+{% endblock content %}
