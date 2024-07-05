@@ -1,0 +1,45 @@
+<!-- templates/counterparties/contract_detail.html -->
+{% extends 'base.html' %}
+{% block title %}
+  Договор №{{ contract.title }}
+{% endblock %}
+{% block content %}
+<main>
+  <div class="row">
+    <aside class="col-12 col-md-4">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Договор №{{ contract.title }}
+        </li>
+        <li class="list-group-item">
+          <a href="{% url 'counterparties:counterparty_detail' contract.counterparty.id %}">
+            Контрагент: {{ contract.counterparty.short_name }}
+          </a>
+        </li>
+        <li class="list-group-item">
+          Дата заключения: {{ contract.conclusion_date }}
+        </li>
+        <li class="list-group-item">
+          ИКЗ: {{ contract.purchase_code }}
+        </li>
+        <li class="list-group-item">
+          Цена договора: {{ contract.contract_price }}
+        </li>
+        <li class="list-group-item">
+          Объект закупки: {{ contract.description }}
+        </li>
+        <li class="list-group-item">
+          Дата завершения работ: {% if contract.сompletion_date %}{{ contract.сompletion_date }} {% endif %}
+        </li>
+        <li class="list-group-item">
+          Фактическая стоимость выполненных работ: {% if contract.actual_cost %}{{ contract.actual_cost }}{% endif %}</td>
+        </li>
+      </ul>
+      <buttomn>
+        <a class="btn btn-primary" href="#">Редактировать договор</a>
+        <a class="btn btn-danger" onclick="return confirm('Вы уверены что хотите удалить договор?');" href="{% url 'counterparties:contract_delete' contract.pk %}">Удалить договор</a>  
+      </buttomn>
+    </aside>
+  </div>
+</main>
+{% endblock %}

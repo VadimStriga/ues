@@ -14,11 +14,13 @@
       <thead class="table-dark">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Наименование контрагентов</th>
+          <th scope="col">Наименование контрагента</th>
           <th scope="col">ОГРН</th>
           <th scope="col">ИНН</th>
+          <th scope="col">КПП</th>
           <th scope="col">Адрес</th>
           <th scope="col">Телефон</th>
+          <th scope="col">Email</th>
         </tr>
       </thead>
       <tbody>
@@ -36,8 +38,10 @@
             </td>
             <td>{{ counterparty.main_state_registration_number }}</td>
             <td>{{ counterparty.tax_identification_number }}</td>
+            <td>{{ counterparty.registration_reason_code }}</td>
             <td>{{ counterparty.address }}</td>
             <td>{{ counterparty.phone_number }}</td>
+            <td>{{ counterparty.email }}</td>
           </tr>
         {% endfor %}
       </tbody>

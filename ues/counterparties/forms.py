@@ -1,6 +1,36 @@
 from django import forms
 
-from .models import Counterparty
+from .models import Contract, Counterparty
+
+
+class ContractDateInput(forms.DateInput):
+    input_type = 'date'
+    format = '%Y-%m-%d'
+
+
+class ContractForm(forms.ModelForm):
+    conclusion_date = forms.DateField(
+        label='Дата заключения договора',
+        required=True,
+        widget=ContractDateInput({'class': 'form-control'})
+    )
+    сompletion_date = forms.DateField(
+        label='Дата завершения работ',
+        required=True,
+        widget=ContractDateInput({'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Contract
+        fields = (
+            'title',
+            'conclusion_date',
+            'contract_price',
+            'purchase_code',
+            'description',
+            'сompletion_date',
+            'actual_cost',
+        )
 
 
 class CounterpartyForm(forms.ModelForm):

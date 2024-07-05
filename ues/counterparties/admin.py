@@ -1,6 +1,20 @@
 from django.contrib import admin
 
-from .models import Counterparty
+from .models import Contract, Counterparty
+
+
+@admin.register(Contract)
+class ContractAdmin(admin.ModelAdmin):
+    list_display = (
+        'counterparty',
+        'title',
+        'conclusion_date',
+        'contract_price',
+        'purchase_code',
+        'description',
+        'сompletion_date',
+        'actual_cost',
+    )
 
 
 @admin.register(Counterparty)

@@ -16,7 +16,8 @@
             {% if view_name  == 'counterparties:index' %}active{% endif %}" aria-current="page" href="{% url 'counterparties:index' %}">Контрагенты</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Договоры</a>
+          <a class="nav-link
+            {% if view_name  == 'counterparties:contracts_list' %}active{% endif %}" href="{% url 'counterparties:contracts_list' %}">Договоры</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Точки учета</a>
@@ -25,10 +26,37 @@
           <a class="nav-link" href="#">Тарифы</a>
         </li>
       </ul>
+      
+      {% if view_name  == 'counterparties:index' %}
+        <a href="{% url 'counterparties:counterparty_create' %}" class="btn btn-danger me-2" role="button">Добавить контрагента</a>
+      {% endif %}
+      {% if view_name  == 'counterparties:counterparty_detail' %}
+      <a class="btn btn-primary me-2" href="{% url 'counterparties:contract_create' counterparty.pk %}"> Добавить договор</a>
+      {% endif %}
       <form class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Поиск</button>
+        <button class="btn btn-outline-success me-2" type="submit">Поиск</button>
       </form>
+      <div class="dropdown-center">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Пользователь: {{ user.first_name }}
+        </button>
+        <ul class="dropdown-menu">
+          {% with request.resolver_match.view_name as view_name %}
+            {% if user.is_authenticated %}
+              <li><a class="dropdown-item" href="{% url 'password_change' %}">Изменить пароль</a></li>
+              <li><a class="dropdown-item" href="{% url 'users:logout' %}">Выйти</a></li>
+            {% else %}
+              <li> 
+                <a class="dropdown-item {% if view_name  == 'users:login' %}active{% endif %}" href="{% url 'users:login' %}">Войти</a>
+              </li>
+              <li>
+                <a class="dropdown-item {% if view_name  == 'users:signup' %}active{% endif %}" href="{% url 'users:signup' %}">Регистрация</a>
+              </li>
+            {% endif %}
+          {% endwith %}
+        </ul>
+      </div>
     </div>
   </div>
 </nav>
