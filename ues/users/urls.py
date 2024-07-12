@@ -11,16 +11,16 @@ from django.urls import path
 
 from . import views
 
-app_name = 'users'
+app_name = "users"
 
 urlpatterns = [
-    path('login/',
-         LoginView.as_view(template_name='users/login.html'),
-         name='login',
+    path("login/",
+         LoginView.as_view(template_name="users/login.html"),
+         name="login",
          ),
-    path('logout/',
-         LogoutView.as_view(template_name='users/logged_out.html'),
-         name='logout',
+    path("logout/",
+         LogoutView.as_view(template_name="users/logged_out.html"),
+         name="logout",
          ),
 #    path('password_change/done/',
 #        PasswordChangeDoneView.as_view(template_name='users/password_change_done.html'),
@@ -46,5 +46,10 @@ urlpatterns = [
 #        PasswordResetView.as_view(template_name='users/password_reset_form.html'),
 #        name='password_reset_form',
 #        ),
-    path('signup/', views.SignUp.as_view(), name='signup'),
+    path(
+        "users/profile/<int:user_id>/",
+        views.user_profile,
+        name="user_profile",
+    ),
+    path("signup/", views.SignUp.as_view(), name="signup"),
 ]

@@ -41,9 +41,10 @@ INSTALLED_APPS = [
     'counterparties.apps.CounterpartiesConfig',
     'users.apps.UsersConfig',
     'debug_toolbar',
+    'sorl.thumbnail',
 ]
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.CustomUser'
 
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'counterparties:index'
@@ -132,6 +133,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

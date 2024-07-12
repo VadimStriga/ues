@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block title  %}Профиль пользователя{% endblock title  %}
+{% block content %}
+<main>
+  <div class="row">
+    <div class="col-lg-3 col-md-12">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          {{ profile.first_name }}
+          {% if profile.middle_name %}
+            {{ profile.middle_name }}
+          {% endif %}
+          {{ profile.last_name }}
+        </li>
+        <li class="list-group-item">
+            Должность: {{ profile.post }}
+        </li>
+        <li class="list-group-item">
+            Дата рождения:
+            {% if profile.birth_date %}
+              {{ profile.birth_date }}
+            {% else %}
+              не указана
+            {% endif %}
+        </li>
+        <li class="list-group-item">
+          Электронная почта: {{ profile.email }}
+      </li>
+      </ul>
+      <buttomn>
+        <a class="btn btn-primary" href="#">Редактировать профиль</a>
+      </buttomn>
+    </div>
+    <div class="col-9 text-center">
+      {% thumbnail profile.photo "200x200" crop="center" upscale=True as im %}
+        <img class="img-thumbnail" src="{{ im.url }}">
+      {% endthumbnail %}
+    </div>
+  </div>
+</main>
+{% endblock content %}

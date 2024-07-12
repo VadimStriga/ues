@@ -1,11 +1,49 @@
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import get_user_model
+from django import forms
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+from .models import CustomUser
 
 
-User = get_user_model()
+class BirthDateInput(forms.DateInput):
+    input_type = 'date'
+    format = '%Y-%m-%d'
 
 
-class CreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        model = User
-        fields = ('first_name', 'middle_name', 'last_name', 'username', 'email', 'post')
+class CustomUserCreationForm(UserCreationForm):
+    birth_date = forms.DateField(
+        label='Дата рождения',
+        required=True,
+        widget=BirthDateInput({'class': 'form-control'})
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'first_name',
+            'middle_name',
+            'last_name',
+            'email',
+            'post',
+            'birth_date',
+            'photo',
+        )
+
+
+class CustomUserChangeForm(UserChangeForm):
+    birth_date = forms.DateField(
+        label='Дата рождения',
+        required=True,
+        widget=BirthDateInput({'class': 'form-control'})
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'first_name',
+            'middle_name',
+            'last_name',
+            'email',
+            'post',
+            'birth_date',
+            'photo',
+        )

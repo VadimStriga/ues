@@ -1,8 +1,43 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-from .models import User
+from .models import CustomUser
 
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'first_name', 'middle_name', 'last_name', 'post')
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    list_display = (
+        "email",
+        "first_name",
+        "middle_name",
+        "last_name",
+        "post",
+        "birth_date",
+        "photo",
+        "is_staff",
+        "is_active",
+    )
+    list_filter = ("email", "is_staff", "is_active",)
+    fieldsets = (
+        (None, {"fields": ("email",
+                           "password",
+                           "first_name",
+                           "middle_name",
+                           "last_name",
+                           "post",
+                           "birth_date",
+                           "photo",)}),
+        ("Разрешения", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
+    )
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": (
+                "email", "password1", "password2", "is_staff",
+                "is_active", "groups", "user_permissions"
+            )}
+        ),
+    )
+    search_fields = ("email",)
+    ordering = ("email",)
