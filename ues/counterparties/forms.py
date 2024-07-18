@@ -12,12 +12,14 @@ class ContractForm(forms.ModelForm):
     conclusion_date = forms.DateField(
         label='Дата заключения договора',
         required=True,
-        widget=ContractDateInput({'class': 'form-control'})
+        widget = forms.SelectDateWidget,
+        localize=True,
     )
     сompletion_date = forms.DateField(
         label='Дата завершения работ',
-        required=True,
-        widget=ContractDateInput({'class': 'form-control'})
+        required=False,
+        widget = forms.SelectDateWidget,
+        localize=True,
     )
 
     class Meta:

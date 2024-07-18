@@ -15,14 +15,14 @@
         <th scope="col">Номер договора</th>
         <th scope="col">Наименование Контрагента</th>
         <th scope="col">Дата заключения</th>
-        <th scope="col">ИКЗ</th>
+        <th scope="col" title= "Идентификационный код закупки на сайте https://zakupki.gov.ru/">ИКЗ</th>
         <th scope="col">Цена договора</th>
         <th scope="col">Объект закупки</th>
         <th scope="col">Дата завершения работ</th>
         <th scope="col">Фактическая стоимость выполненных работ</th>
       </tr>
     </thead>
-    {% for contract in contracts %}
+    {% for contract in page_obj %}
       <tr>
         <td scope="row"></th>
         <td>
@@ -43,5 +43,6 @@
       </tr>
     {% endfor %}
   </tbody>
-</table> 
+</table>
+{% include 'includes/paginator.html' %}
 {% endblock %} 

@@ -1,9 +1,16 @@
+<!-- templates/users/user_detail.html -->
+
 {% extends "base.html" %}
 {% load thumbnail %}
 {% block title  %}Профиль пользователя{% endblock title  %}
 {% block content %}
 <main>
   <div class="row">
+    <div class="col-md-2 text-center">
+      {% thumbnail profile.photo "200x200" crop="center" upscale=True as im %}
+        <img class="img-thumbnail" src="{{ im.url }}">
+      {% endthumbnail %}
+    </div>
     <div class="col-lg-3 col-md-12">
       <ul class="list-group list-group-flush">
         <li class="list-group-item">
@@ -28,14 +35,11 @@
           Электронная почта: {{ profile.email }}
       </li>
       </ul>
-      <buttomn>
-        <a class="btn btn-primary" href="#">Редактировать профиль</a>
-      </buttomn>
-    </div>
-    <div class="col-9 text-center">
-      {% thumbnail profile.photo "200x200" crop="center" upscale=True as im %}
-        <img class="img-thumbnail" src="{{ im.url }}">
-      {% endthumbnail %}
+      {% if profile.id == user.id %}
+        <buttomn>
+          <a class="btn btn-primary" href="{% url 'users:user_edit' %}">Редактировать профиль</a>
+        </buttomn>
+      {% endif %}
     </div>
   </div>
 </main>

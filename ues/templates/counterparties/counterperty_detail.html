@@ -49,6 +49,11 @@
         </buttomn>
       </div>
       <div class="col-9">
+        <h3>Всего договоров: {{ contracts_count }}</h3>
+        <buttomn>
+          <a class="btn btn-primary me-2" href="{% url 'counterparties:contract_create' counterparty.pk %}"> Добавить договор</a>
+        </buttomn>
+        <br>
         {% if contracts %}
           <br>
             <table class="table table-striped table-hover table_sort">
@@ -57,7 +62,7 @@
                   <th scope="col">#</th>
                   <th scope="col">Номер договора</th>
                   <th scope="col">Дата заключения</th>
-                  <th scope="col">ИКЗ</th>
+                  <th scope="col" title= "Идентификационный код закупки на сайте https://zakupki.gov.ru/">ИКЗ</th>
                   <th scope="col">Цена договора</th>
                   <th scope="col">Объект закупки</th>
                   <th scope="col">Дата завершения работ</th>

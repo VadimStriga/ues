@@ -15,16 +15,16 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">Наименование контрагента</th>
-          <th scope="col">ОГРН</th>
-          <th scope="col">ИНН</th>
-          <th scope="col">КПП</th>
+          <th scope="col" title= "Основной государственный регистрационный номер">ОГРН</th>
+          <th scope="col" title= "Индивидуальный номер налогоплательщика">ИНН</th>
+          <th scope="col" title= "Код причины постановки на учёт">КПП</th>
           <th scope="col">Адрес</th>
           <th scope="col">Телефон</th>
           <th scope="col">Email</th>
         </tr>
       </thead>
       <tbody>
-        {% for counterparty in counterparties %}
+        {% for counterparty in page_obj %}
           <tr>
             <td scope="row"></th>
             <td>
@@ -47,4 +47,5 @@
       </tbody>
     </table>
   </div>
+  {% include 'includes/paginator.html' %}
 {% endblock content %} 

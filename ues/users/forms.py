@@ -5,45 +5,46 @@ from .models import CustomUser
 
 
 class BirthDateInput(forms.DateInput):
-    input_type = 'date'
-    format = '%Y-%m-%d'
+    input_type = "date"
+    format = "%Y-%m-%d"
 
 
 class CustomUserCreationForm(UserCreationForm):
     birth_date = forms.DateField(
-        label='Дата рождения',
+        label="Дата рождения",
         required=True,
-        widget=BirthDateInput({'class': 'form-control'})
+        widget=BirthDateInput({"class": "form-control"})
     )
 
     class Meta:
         model = CustomUser
         fields = (
-            'first_name',
-            'middle_name',
-            'last_name',
-            'email',
-            'post',
-            'birth_date',
-            'photo',
+            "first_name",
+            "middle_name",
+            "last_name",
+            "email",
+            "post",
+            "birth_date",
+            "photo",
         )
 
 
 class CustomUserChangeForm(UserChangeForm):
     birth_date = forms.DateField(
-        label='Дата рождения',
+        label="Дата рождения",
         required=True,
-        widget=BirthDateInput({'class': 'form-control'})
+        widget = forms.SelectDateWidget({"class": "form-control"}),
+        localize=True,
     )
 
     class Meta:
         model = CustomUser
         fields = (
-            'first_name',
-            'middle_name',
-            'last_name',
-            'email',
-            'post',
-            'birth_date',
-            'photo',
+            "email",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "post",
+            "birth_date",
+            "photo",
         )

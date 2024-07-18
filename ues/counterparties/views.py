@@ -1,24 +1,29 @@
+from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import ContractForm, CounterpartyForm
-
-
 from .models import Contract, Counterparty
+
+
+NUMBER_OF_COUNTERPARTIES = 25
+NUMBER_OF_CONTRACTS = 25
 
 
 def index(request):
     counterparties = Counterparty.objects.all()
+    paginator = Paginator(counterparties, NUMBER_OF_COUNTERPARTIES)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     context = {
-        'counterparties': counterparties,
+        'page_obj': page_obj,
     }
     return render(request, 'counterparties/index.html', context)
 
 
+@login_required
 def contract_create(request, counterparty_id):
     form = ContractForm(request.POST or None)
-    print(request)
-    print(counterparty_id)
     if form.is_valid():
         contract = form.save(commit=False)
         contract.counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
@@ -30,6 +35,7 @@ def contract_create(request, counterparty_id):
     return render(request, 'counterparties/contract_create.html', context)
 
 
+@login_required
 def contract_delete(request, contract_id):
     contract = get_object_or_404(Contract, pk=contract_id)
     contract.delete()
@@ -44,6 +50,7 @@ def contract_detail(request, contract_id):
     return render(request, 'counterparties/contract_detail.html', context)
 
 
+@login_required
 def contract_edit(request, contract_id):
     contract = get_object_or_404(Contract, pk=contract_id)
     form = ContractForm(request.POST or None, instance=contract)
@@ -63,9 +70,11 @@ def contract_edit(request, contract_id):
 
 def contracts_list(request):
     contracts = Contract.objects.all()
-    print(contracts[0])
+    paginator = Paginator(contracts, NUMBER_OF_CONTRACTS)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     context = {
-        'contracts': contracts,
+        'page_obj': page_obj,
     }
     return render(request, 'counterparties/contracts_list.html', context)
 
@@ -83,6 +92,7 @@ def counterparty_create(request):
     return render(request, 'counterparties/counterparty_create.html', context)
 
 
+@login_required
 def counterparty_delete(request, counterparty_id):
     counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
     counterparty.delete()
@@ -92,13 +102,16 @@ def counterparty_delete(request, counterparty_id):
 def counterparty_detail(request, counterparty_id):
     counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
     contracts = Contract.objects.filter(counterparty=counterparty_id)
+    contracts_count = Contract.objects.filter(counterparty=counterparty).count()
     context = {
         'counterparty': counterparty,
         'contracts': contracts,
+        'contracts_count': contracts_count,
     }
     return render(request, 'counterparties/counterperty_detail.html', context)
 
 
+@login_required
 def counterparty_edit(request, counterparty_id):
     counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
     form = CounterpartyForm(request.POST or None, instance=counterparty)

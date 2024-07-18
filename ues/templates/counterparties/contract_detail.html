@@ -36,7 +36,7 @@
         </li>
       </ul>
       <buttomn>
-        <a class="btn btn-primary" href="#">Редактировать договор</a>
+        <a class="btn btn-primary" href="{% url "counterparties:contract_edit" contract.pk %}">Редактировать договор</a>
         <a class="btn btn-danger" onclick="return confirm('Вы уверены что хотите удалить договор?');" href="{% url 'counterparties:contract_delete' contract.pk %}">Удалить договор</a>  
       </buttomn>
     </aside>
