@@ -13,12 +13,14 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav nav-underline me-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle {% if view_name  == 'counterparties:index' or view_name  == 'counterparties:contracts_list' %}active{% endif %}" href="{% url 'counterparties:index' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle {% if view_name  == 'counterparties:index' or view_name  == 'counterparties:contracts_list' or view_name  == 'counterparties:counterparty_create'%}active{% endif %}" href="{% url 'counterparties:index' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Контрагенты
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item {% if view_name  == 'counterparties:index' %}active{% endif %}" href="{% url 'counterparties:index' %}">Контрагенты</a></li>
             <li><a class="dropdown-item {% if view_name  == 'counterparties:contracts_list' %}active{% endif %}" href="{% url 'counterparties:contracts_list' %}">Договоры</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item {% if view_name  == 'counterparties:counterparty_create' %}active{% endif %}" href="{% url 'counterparties:counterparty_create' %}">Добавить контрагента</a></li>
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -31,26 +33,19 @@
             <li><a class="dropdown-item" href="#">Тарифы</a></li>
           </ul>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if view_name  == 'users:users_list'%}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Наша организация
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'users:users_list' %}">Наши сотрудники</a></li>
+            <li><a class="dropdown-item" href="#">Реквизиты</a></li>
+            <li><a class="dropdown-item" href="#">О нас</a></li>
+          </ul>
+        </li>
       </ul>
     </div>
-    {% if view_name  == 'counterparties:index' %}
-      <a href="{% url 'counterparties:counterparty_create' %}" class="btn btn-danger me-2" role="button">Добавить контрагента</a>
-    {% endif %}
-    <ul class="navbar-nav nav-underline me-auto mb-2 mb-lg-0">
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Наша организация
-        </a>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="{% url 'users:users_list' %}">Наши сотрудники</a></li>
-          <li><a class="dropdown-item" href="#">Реквизиты</a></li>
-          <li><a class="dropdown-item" href="#">О нас</a></li>
-        </ul>
-      </li>
-    </ul>
   </div>
-</nav>
-<nav class="navbar navbar-expand-lg bg-body-tertiary" >
   <div class="container-fluid">
     <form class="d-flex" role="search">
       <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
