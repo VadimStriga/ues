@@ -1,6 +1,16 @@
 from django.contrib import admin
 
-from .models import Contract, Counterparty
+from .models import Document ,Contract, Counterparty
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = (
+        'contract',
+        'title',
+        'file',
+        'conclusion_date',
+    )
 
 
 @admin.register(Contract)

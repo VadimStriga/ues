@@ -1,6 +1,16 @@
 from django import forms
 
-from .models import Contract, Counterparty
+from .models import Document ,Contract, Counterparty
+
+
+class DocumentForm(forms.ModelForm):
+
+    class Meta:
+        model = Document
+        fields = (
+            'title',
+            'file',
+        )
 
 
 class ContractDateInput(forms.DateInput):

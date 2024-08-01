@@ -2,8 +2,8 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import ContractForm, CounterpartyForm
-from .models import Contract, Counterparty
+from .forms import DocumentForm ,ContractForm, CounterpartyForm
+from .models import Document ,Contract, Counterparty
 
 
 NUMBER_OF_COUNTERPARTIES = 25
@@ -36,6 +36,24 @@ def contract_create(request, counterparty_id):
 
 
 @login_required
+def add_document(request, contract_id):
+    contract = get_object_or_404(Contract, pk=contract_id)
+    form = DocumentForm(request.POST or None)
+    if form.is_valid():
+        document = form.save(commit=False)
+        document.contract = contract
+        document.save()
+    return redirect('counterparties:contract_detail', contract_id=contract_id)
+
+
+@login_required
+def delete_document(request, contract_id, document_id):
+    document = get_object_or_404(Document, pk=document_id)
+    document.delete()
+    return redirect('counterparties:contract_detail', contract_id=contract_id)
+
+
+@login_required
 def contract_delete(request, contract_id):
     contract = get_object_or_404(Contract, pk=contract_id)
     contract.delete()
@@ -44,8 +62,12 @@ def contract_delete(request, contract_id):
 
 def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, pk=contract_id)
+    form = DocumentForm
+    documents = Document.objects.filter(contract=contract_id)
     context = {
         'contract': contract,
+        'documents': documents,
+        'form': form,
     }
     return render(request, 'counterparties/contract_detail.html', context)
 

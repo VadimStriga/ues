@@ -12,6 +12,16 @@ urlpatterns = [
         name='contract_create'
     ),
     path(
+        'counterparties/contract_detail/<int:contract_id>/document/',
+        views.add_document,
+        name='add_document',
+    ),
+    path(
+        'counterparties/contract_detail/<int:contract_id>/document/<int:document_id>/',
+        views.delete_document,
+        name='delete_document',
+    ),
+    path(
         'counterparties/contract_detail/<int:contract_id>/',
         views.contract_detail,
         name='contract_detail'

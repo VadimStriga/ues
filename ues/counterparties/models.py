@@ -1,6 +1,40 @@
 from django.db import models
 
 
+def contract_directory_path(instance, filename):
+    return "contracts/contract_{0}/{1}".format(instance.contract.title, filename)
+
+
+class Document(models.Model):
+    contract = models.ForeignKey(
+        'Contract',
+        on_delete=models.CASCADE,
+        related_name='documents',
+    )
+    conclusion_date = models.DateField(
+        'Дата подписания документа',
+        auto_now=False,
+        auto_now_add=False,
+        null=True,
+        blank=True,
+    )
+    title = models.CharField(
+        'Наименование документа',
+        max_length=255,
+    )
+    file = models.FileField(
+        upload_to=contract_directory_path,
+    )
+
+    def __str__(self) -> str:
+        return self.title
+    
+    class Meta:
+        verbose_name = 'Документ'
+        verbose_name_plural = 'Документы'
+        ordering = ('conclusion_date',)
+
+
 class Contract(models.Model):
     counterparty = models.ForeignKey(
         'Counterparty',

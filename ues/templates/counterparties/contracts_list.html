@@ -22,27 +22,29 @@
         <th scope="col">Фактическая стоимость выполненных работ</th>
       </tr>
     </thead>
-    {% for contract in page_obj %}
-      <tr>
-        <td scope="row"></th>
-        <td>
-         <a href="{% url 'counterparties:contract_detail' contract.id %}">
-         {{ contract.title }}
-         </a>
-        </td>
-        <td>
-          <a href="{% url 'counterparties:counterparty_detail' contract.counterparty.id %}">
-          {{ contract.counterparty.short_name }}
-        </td>
-        <td>{{ contract.conclusion_date }}</td>
-        <td>{{ contract.purchase_code }}</td>
-        <td>{{ contract.contract_price }}</td>
-        <td>{{ contract.description }}</td>
-        <td>{% if contract.сompletion_date %}{{ contract.сompletion_date }} {% endif %}</td>
-        <td>{% if contract.actual_cost %}{{ contract.actual_cost }}{% endif %}</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% include 'includes/paginator.html' %}
+    <tbody>
+      {% for contract in page_obj %}
+        <tr>
+          <td scope="row"></td>
+          <td>
+           <a href="{% url 'counterparties:contract_detail' contract.id %}">
+           {{ contract.title }}
+           </a>
+          </td>
+          <td>
+            <a href="{% url 'counterparties:counterparty_detail' contract.counterparty.id %}">
+            {{ contract.counterparty.short_name }}
+          </td>
+          <td>{{ contract.conclusion_date }}</td>
+          <td>{{ contract.purchase_code }}</td>
+          <td>{{ contract.contract_price }}</td>
+          <td>{{ contract.description }}</td>
+          <td>{% if contract.сompletion_date %}{{ contract.сompletion_date }} {% endif %}</td>
+          <td>{% if contract.actual_cost %}{{ contract.actual_cost }}{% endif %}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'counterparties/includes/paginator.html' %}
 {% endblock %} 
