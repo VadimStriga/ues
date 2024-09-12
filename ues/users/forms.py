@@ -33,7 +33,7 @@ class CustomUserChangeForm(UserChangeForm):
     birth_date = forms.DateField(
         label="Дата рождения",
         required=True,
-        widget = forms.SelectDateWidget({"class": "form-control"}),
+        widget = BirthDateInput({"class": "form-control"}),
         localize=True,
     )
 

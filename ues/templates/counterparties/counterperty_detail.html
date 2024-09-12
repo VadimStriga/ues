@@ -30,7 +30,7 @@
               ИНН: {{ counterparty.tax_identification_number }}
             </li>
             <li class="list-group-item">
-              КПП: {{ counterparty.registration_reason_code }}
+              КПП: {% if counterparty.registration_reason_code %}{{ counterparty.registration_reason_code }}{% endif %}
             </li>
             <li class="list-group-item">
               Контактный телефон: {{ counterparty.phone_number }}
@@ -45,26 +45,30 @@
             </li>
             <li class="list-group-item"></li>
           </ul>
-          <buttomn>
-            <a class="btn btn-primary" href="{% url 'counterparties:counterparty_edit' counterparty.pk %}">Редактировать контрагента</a>
-            <a class="btn btn-danger" onclick="return confirm('Вы уверены что хотите удалить контрагента?');" href="{% url 'counterparties:counterparty_delete' counterparty.pk %}">Удалить контрагента</a>
-          </buttomn>
+          {% if user.is_authenticated %}
+            <buttomn>
+              <a class="btn btn-primary" href="{% url 'counterparties:counterparty_edit' counterparty.pk %}">Редактировать контрагента</a>
+              <a class="btn btn-danger" onclick="return confirm('Вы уверены что хотите удалить контрагента?');" href="{% url 'counterparties:counterparty_delete' counterparty.pk %}">Удалить контрагента</a>
+            </buttomn>
+          {% endif %}
         </div>
         <div class="col">
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Договоры</button>
-              <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Точки учета</button>
-              <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Комментарии</button>
+              <button class="nav-link active" id="nav-docs-tab" data-bs-toggle="tab" data-bs-target="#nav-docs" type="button" role="tab" aria-controls="nav-docs" aria-selected="true">Договоры</button>
+              <button class="nav-link" id="nav-point-tab" data-bs-toggle="tab" data-bs-target="#nav-point" type="button" role="tab" aria-controls="nav-point" aria-selected="false">Точки учета</button>
+              <button class="nav-link" id="nav-comment-tab" data-bs-toggle="tab" data-bs-target="#nav-comment" type="button" role="tab" aria-controls="nav-comment" aria-selected="false">Комментарии</button>
             </div>
           </nav>
           <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <buttomn>
-                  <a class="btn btn-primary me-2" href="{% url 'counterparties:contract_create' counterparty.pk %}"> Добавить договор</a>
-                </buttomn>
-              </div>
+            <div class="tab-pane fade show active" id="nav-docs" role="tabpanel" aria-labelledby="nav-docs-tab">
+              {% if user.is_authenticated %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <buttomn>
+                    <a class="btn btn-primary me-2" href="{% url 'counterparties:contract_create' counterparty.pk %}"> Добавить договор</a>
+                  </buttomn>
+                </div>
+              {% endif %}
               {% if contracts %}
                 <table class="table caption-top table-striped table-hover table_sort">
                   <caption>Всего договоров: {{ contracts_count }}</caption>
@@ -91,7 +95,7 @@
                         </td>
                         <td>{{ contract.conclusion_date }}</td>
                         <td>{{ contract.purchase_code }}</td>
-                        <td>{{ contract.contract_price }}</td>
+                        <td>{% if contract.contract_price %} {{ contract.contract_price }} {% endif %}</td>
                         <td>{{ contract.description }}</td>
                         <td>{% if contract.сompletion_date %}{{ contract.сompletion_date }} {% endif %}</td>
                         <td> {% if contract.actual_cost %}{{ contract.actual_cost }}{% endif %}</td>
@@ -101,13 +105,10 @@
                 </table>
               {% endif %}
             </div>
-            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-              <br>
-              <buttomn>
-                <a class="btn btn-primary" href="#">Добавить точку учёта электроэнергии</a>
-              </buttomn>
+            <div class="tab-pane fade" id="nav-point" role="tabpanel" aria-labelledby="nav-point-tab">
+              {% include "accounting/includes/contract_points.html" %}
             </div>
-            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+            <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">Комментарии</div>
           </div>
         </div> 
       </div>

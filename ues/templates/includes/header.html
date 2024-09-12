@@ -19,8 +19,10 @@
           <ul class="dropdown-menu">
             <li><a class="dropdown-item {% if view_name  == 'counterparties:index' %}active{% endif %}" href="{% url 'counterparties:index' %}">Контрагенты</a></li>
             <li><a class="dropdown-item {% if view_name  == 'counterparties:contracts_list' %}active{% endif %}" href="{% url 'counterparties:contracts_list' %}">Договоры</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item {% if view_name  == 'counterparties:counterparty_create' %}active{% endif %}" href="{% url 'counterparties:counterparty_create' %}">Добавить контрагента</a></li>
+            {% if user.is_authenticated %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item {% if view_name  == 'counterparties:counterparty_create' %}active{% endif %}" href="{% url 'counterparties:counterparty_create' %}">Добавить контрагента</a></li>
+            {% endif %}          
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -28,9 +30,12 @@
             Учёт электроэнергии
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Показания</a></li>
-            <li><a class="dropdown-item" href="#">Точки учета</a></li>
-            <li><a class="dropdown-item" href="#">Тарифы</a></li>
+            <li><a class="dropdown-item {% if view_name == "accounting:points_list" %}active{% endif %}" href="{% url "accounting:points_list" %}">Точки учета</a></li>
+            <li><a class="dropdown-item {% if view_name == "accounting:tariffs_list" %}active{% endif %}" href="{% url "accounting:tariffs_list" %}">Тарифы</a></li>
+            {% if user.is_authenticated %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Внести показания</a></li>
+            {% endif %}
           </ul>
         </li>
         <li class="nav-item dropdown">

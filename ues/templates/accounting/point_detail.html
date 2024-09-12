@@ -1,0 +1,90 @@
+<!-- templates/accounting/point_detail.html -->
+
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% block title %}Точка учёта: {{ point.name }} {% endblock %}
+{% block content %}
+<main>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xxl-3 col-xl-12">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <a href="{% url 'counterparties:counterparty_detail' point.contract.counterparty.id %}">
+              Контрагент: {{ point.contract.counterparty.short_name }}
+            </a>
+          </li>
+          <li class="list-group-item">
+            <a href="{% url 'counterparties:contract_detail' point.contract.id %}">
+              Договор №{{ point.contract.title }}
+            </a>
+          </li>
+          <li class="list-group-item">
+            Дата заключения: {{ point.contract.conclusion_date }}
+          </li>
+          <li class="list-group-item">
+            ИКЗ: {{ point.contract.purchase_code }}
+          </li>
+          <li class="list-group-item">
+            Цена договора: {% if point.contract.contract_price%}{{ point.contract.contract_price }}{% endif %}
+          </li>
+          <li class="list-group-item">
+            Объект закупки: {{ point.contract.description }}
+          </li>
+          <li class="list-group-item"><b>Наименование точки учёта:</b> {{ point.name }} </li>
+          <li class="list-group-item"><b>Место расположение точки учета:</b> {{ point.location }}</li>
+          <li class="list-group-item"><b>Источник питания:</b> {{ point.power_supply }}</li>
+          <li class="list-group-item"><b>Тип учёта:</b> {{ point.get_type_of_accounting_display }}</li>
+          <li class="list-group-item"><b>Тариф:</b> {{ point.get_tariff_display }}</li>
+          <li class="list-group-item"><b>Наценка:</b> {{ point.margin }}</li>
+          <li class="list-group-item"><b>Потери в линиях:</b> {{ point.losses }}</li>
+          <li class="list-group-item"><b>Постоянные потери в трансформаторе:</b> {{ point.constant_losses }}</li>
+          <li class="list-group-item"><b>Коэффициент трансформации:</b> {{ point.transformation_coefficient }}</li>
+        </ul>
+        {% if user.is_authenticated %}
+          <buttomn>
+            <a class="btn btn-primary" href="{% url "accounting:point_edit" point.id %}">Редактировать точку учета</a>
+            <a class="btn btn-danger" onclick="return confirm('Вы уверены что хотите удалить точку учета {{ point.name }}?');" href="{% url "accounting:point_delete" point.id %}">Удалить точку учета</a>  
+          </buttomn>
+        {% endif %}
+      </div>
+      <div class="col">
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link" id="nav-devices-tab" data-bs-toggle="tab" data-bs-target="#nav-devices" type="button" role="tab" aria-controls="nav-devices" aria-selected="true">Приборы учета</button>
+            <button class="nav-link active" id="nav-indications-tab" data-bs-toggle="tab" data-bs-target="#nav-indications" type="button" role="tab" aria-controls="nav-indications" aria-selected="false">Показания</button>
+            <button class="nav-link" id="nav-doc-tab" data-bs-toggle="tab" data-bs-target="#nav-doc" type="button" role="tab" aria-controls="nav-doc" aria-selected="false">Документация</button>
+            <button class="nav-link" id="nav-comment-tab" data-bs-toggle="tab" data-bs-target="#nav-comment" type="button" role="tab" aria-controls="nav-comment" aria-selected="false">Комментарии</button>
+          </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade" id="nav-devices" role="tabpanel" aria-labelledby="nav-devices-tab">
+            {% if user.is_authenticated %}
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <buttomn>
+                  <a class="btn btn-primary me-2" href="{% url 'accounting:meter_create' point.id %}"> Добавить счётчик электроэнергии</a>
+                </buttomn>
+                <buttomn>
+                  <a class="btn btn-primary me-2" href="{% url 'accounting:transformer_create' point.id %}"> Добавить трансформатор тока</a>
+                </buttomn>
+              </div>
+            {% endif %}
+            <br>
+            {% include "accounting/includes/meters_list.html" %}
+            {% include "accounting/includes/transformers_list.html" %}
+          </div>
+          <div class="tab-pane fade show active" id="nav-indications" role="tabpanel" aria-labelledby="nav-indications-tab">
+            {% include "accounting/includes/calculations_list.html" %}
+          </div>
+          <div class="tab-pane fade" id="nav-doc" role="tabpanel" aria-labelledby="nav-doc-tab">
+            Документы всякие
+          </div>
+          <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
+            Комментарии
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

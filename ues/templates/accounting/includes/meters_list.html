@@ -1,0 +1,81 @@
+<!-- templates/accounting/includes/meters_list.html -->
+{% load thumbnail %}
+{% load static %}
+
+{% for meter in meters %}
+  <div class="card mb-3" style="max-width: 50%;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        {% thumbnail meter.photo "200x200" crop="center" upscale=True as im %}
+          <img class="img-thumbnail" height="200px" src="{{ im.url }}">
+        {% endthumbnail %}
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">Счётчик электроэнергии</h5>
+          <p class="card-text">
+            <b>Марка:</b> {{ meter.mark }}</br>
+            <b>Заводской номер:</b> {{ meter.number }}</br>
+            <b>Дата установки:</b> {{ meter.installation_date }}</br>
+            <b>Дата следующей поверки:</b> {{ meter.date_of_next_verification }}
+          </p>
+          <p class="card-text">
+            <small class="text-body-secondary">Статус: действующий</small>
+            {% if user.is_authenticated %}
+              <a class="btn btn-link" href="{% url 'accounting:meter_edit' meter.point.id meter.id %}" title="Редактировать">
+                <img src="{% static "icons/pencil-square.svg " %}" alt="Bootstrap" width="16" height="16">
+              </a>
+              <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить счетчик э/э?');" href="{% url 'accounting:meter_delete' meter.point.id meter.id %}" title="Удалить">
+                <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
+              </a>
+            {% endif %}
+          </p>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% if old_meters %}
+  <p class="d-inline-flex gap-1">
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+      Демонтированные счётчики электроэнергии
+    </button>
+  </p>
+{% endif %}
+{% for old_meter in old_meters %}
+  <div class="collapse" id="collapseExample">
+    <div class="card mb-3" style="max-width: 50%;">
+      <div class="row g-0">
+        <div class="col-md-4">
+          {% thumbnail old_meter.photo "200x200" crop="center" upscale=True as im %}
+            <img class="img-thumbnail" height="200px" src="{{ im.url }}">
+          {% endthumbnail %}
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">Счётчик электроэнергии</h5>
+            <p class="card-text">
+              <b>Марка:</b> {{ old_meter.mark }}</br>
+              <b>Заводской номер:</b> {{ old_meter.number }}</br>
+              <b>Дата установки:</b> {{ old_meter.installation_date }}</br>
+              <b>Дата следующей поверки:</b> {{ old_meter.date_of_next_verification }}
+            </p>
+            <p class="card-text"></p>
+            <p class="card-text">
+              <small class="text-body-secondary">Статус: недействующий</small>
+              {% if user.is_authenticated %}
+                <a class="btn btn-link" href="{% url 'accounting:meter_edit' old_meter.point.id old_meter.id %}" title="Редактировать">
+                  <img src="{% static "icons/pencil-square.svg " %}" alt="Bootstrap" width="16" height="16">
+                </a>
+                <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить договор?');" href="{% url 'accounting:meter_delete' old_meter.point.id old_meter.id %}" title="Удалить">
+                  <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
+                </a>
+              {% endif %}
+            </p> 
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}

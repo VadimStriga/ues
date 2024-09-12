@@ -1,0 +1,32 @@
+<!-- templates/accounting/includes/contract_points.html -->
+{% load user_filters %}
+
+{% if points %}
+  <table class="table caption-top table-striped table-hover table_sort">
+    <caption>Всего точек учета: {{ points.count }}</caption>
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Наименование точки учёта</th>
+        <th scope="col">Место расположения точки учета</th>
+        <th scope="col">Источник питания</th>
+        <th scope="col">Тип учёта</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for point in points %}
+        <tr>
+          <td scope="row"></td>
+          <td>
+            <a href="{% url 'accounting:point_detail' point.id %}">
+              {{ point.name }}
+            </a>
+          </td>
+          <td>{{ point.location }}</td>
+          <td>{{ point.power_supply }}</td>
+          <td>{{ point.get_type_of_accounting_display }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}

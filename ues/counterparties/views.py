@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import DocumentForm ,ContractForm, CounterpartyForm
 from .models import Document ,Contract, Counterparty
+from electricity_accounting.models import ElectricityMeteringPoint
 
 
 NUMBER_OF_COUNTERPARTIES = 25
@@ -38,7 +39,7 @@ def contract_create(request, counterparty_id):
 @login_required
 def add_document(request, contract_id):
     contract = get_object_or_404(Contract, pk=contract_id)
-    form = DocumentForm(request.POST or None)
+    form = DocumentForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         document = form.save(commit=False)
         document.contract = contract
@@ -64,9 +65,13 @@ def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, pk=contract_id)
     form = DocumentForm
     documents = Document.objects.filter(contract=contract_id)
+    documents_count = Document.objects.filter(contract=contract_id).count()
+    points = ElectricityMeteringPoint.objects.filter(contract=contract_id)
     context = {
         'contract': contract,
         'documents': documents,
+        'documents_count': documents_count,
+        'points': points,
         'form': form,
     }
     return render(request, 'counterparties/contract_detail.html', context)
@@ -125,10 +130,12 @@ def counterparty_detail(request, counterparty_id):
     counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
     contracts = Contract.objects.filter(counterparty=counterparty_id)
     contracts_count = Contract.objects.filter(counterparty=counterparty).count()
+    points = ElectricityMeteringPoint.objects.filter(contract__in=contracts)
     context = {
         'counterparty': counterparty,
         'contracts': contracts,
         'contracts_count': contracts_count,
+        'points': points,
     }
     return render(request, 'counterparties/counterperty_detail.html', context)
 

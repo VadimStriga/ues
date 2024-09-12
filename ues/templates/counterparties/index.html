@@ -38,7 +38,7 @@
             </td>
             <td>{{ counterparty.main_state_registration_number }}</td>
             <td>{{ counterparty.tax_identification_number }}</td>
-            <td>{{ counterparty.registration_reason_code }}</td>
+            <td>{% if counterparty.registration_reason_code %}{{ counterparty.registration_reason_code }}{% endif %}</td>
             <td>{{ counterparty.address }}</td>
             <td>{{ counterparty.phone_number }}</td>
             <td>{{ counterparty.email }}</td>
@@ -47,5 +47,5 @@
       </tbody>
     </table>
   </div>
-  {% include 'counterparties/includes/paginator.html' %}
+  {% include 'includes/paginator.html' %}
 {% endblock content %} 

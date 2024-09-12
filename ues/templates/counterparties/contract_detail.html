@@ -24,38 +24,51 @@
             ИКЗ: {{ contract.purchase_code }}
           </li>
           <li class="list-group-item">
-            Цена договора: {{ contract.contract_price }}
+            Цена договора: {% if contract.contract_price %} {{ contract.contract_price }} {% endif %}
           </li>
           <li class="list-group-item">
             Объект закупки: {{ contract.description }}
           </li>
           <li class="list-group-item">
-            Дата завершения работ: {% if contract.сompletion_date %}{{ contract.сompletion_date }} {% endif %}
+            Дата завершения работ: {% if contract.сompletion_date %} {{ contract.сompletion_date }} {% endif %}
           </li>
           <li class="list-group-item">
-            Фактическая стоимость выполненных работ: {% if contract.actual_cost %}{{ contract.actual_cost }}{% endif %}</td>
+            Фактическая стоимость выполненных работ: {% if contract.actual_cost %} {{ contract.actual_cost }} {% endif %}</td>
           </li>
           <li class="list-group-item"></li>
         </ul>
-        <buttomn>
-          <a class="btn btn-primary" href="{% url "counterparties:contract_edit" contract.pk %}">Редактировать договор</a>
-          <a class="btn btn-danger" onclick="return confirm('Вы уверены что хотите удалить договор?');" href="{% url 'counterparties:contract_delete' contract.pk %}">Удалить договор</a>  
-        </buttomn>
+        {% if user.is_authenticated %}
+          <buttomn>
+            <a class="btn btn-primary" href="{% url "counterparties:contract_edit" contract.pk %}">Редактировать договор</a>
+            <a class="btn btn-danger" onclick="return confirm('Вы уверены что хотите удалить договор?');" href="{% url 'counterparties:contract_delete' contract.pk %}">Удалить договор</a>  
+          </buttomn>
+        {% endif %}
       </div>
       <div class="col">
         <nav>
           <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Документы</button>
-            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Точки учета</button>
-            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Комментарии</button>
+            <button class="nav-link active" id="nav-doc-tab" data-bs-toggle="tab" data-bs-target="#nav-doc" type="button" role="tab" aria-controls="nav-doc" aria-selected="true">Документы</button>
+            <button class="nav-link" id="nav-point-tab" data-bs-toggle="tab" data-bs-target="#nav-point" type="button" role="tab" aria-controls="nav-point" aria-selected="false">Точки учета</button>
+            <button class="nav-link" id="nav-comment-tab" data-bs-toggle="tab" data-bs-target="#nav-comment" type="button" role="tab" aria-controls="nav-comment" aria-selected="false">Комментарии</button>
           </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
-          <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-            {% include "counterparties/includes/add_document.html" %}
+          <div class="tab-pane fade show active" id="nav-doc" role="tabpanel" aria-labelledby="nav-doc-tab">
+            {% include "counterparties/includes/contract_documents.html" %}
           </div>
-          <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
-          <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+          <div class="tab-pane fade" id="nav-point" role="tabpanel" aria-labelledby="nav-point-tab">
+            {% if user.is_authenticated %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <buttomn>
+                <a class="btn btn-primary me-2" href="{% url 'accounting:point_create' contract.id %}"> Добавить точку учёта электроэнергии</a>
+              </buttomn>
+            </div>
+            {% endif %}
+            {% include "accounting/includes/contract_points.html" %}
+          </div>
+          <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
+            Комментарии
+          </div>
         </div>
       </div>
     </div>

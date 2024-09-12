@@ -15,7 +15,7 @@
         <th scope="col">Номер договора</th>
         <th scope="col">Наименование Контрагента</th>
         <th scope="col">Дата заключения</th>
-        <th scope="col" title= "Идентификационный код закупки на сайте https://zakupki.gov.ru/">ИКЗ</th>
+        <th scope="col" title="Идентификационный код закупки на сайте https://zakupki.gov.ru/">ИКЗ</th>
         <th scope="col">Цена договора</th>
         <th scope="col">Объект закупки</th>
         <th scope="col">Дата завершения работ</th>
@@ -37,7 +37,7 @@
           </td>
           <td>{{ contract.conclusion_date }}</td>
           <td>{{ contract.purchase_code }}</td>
-          <td>{{ contract.contract_price }}</td>
+          <td>{% if contract.contract_price %}{{ contract.contract_price }}{% endif %}</td>
           <td>{{ contract.description }}</td>
           <td>{% if contract.сompletion_date %}{{ contract.сompletion_date }} {% endif %}</td>
           <td>{% if contract.actual_cost %}{{ contract.actual_cost }}{% endif %}</td>
@@ -46,5 +46,5 @@
     </tbody>
   </table>
 </div>
-{% include 'counterparties/includes/paginator.html' %}
+{% include 'includes/paginator.html' %}
 {% endblock %} 

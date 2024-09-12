@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cleanup.apps.CleanupConfig',
+    'electricity_accounting.apps.ElectricityAccountingConfig',
     'core.apps.CoreConfig',
     'counterparties.apps.CounterpartiesConfig',
     'users.apps.UsersConfig',
@@ -124,9 +126,11 @@ LANGUAGE_CODE = 'ru-RU'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
+USE_L10N = False
 
 USE_TZ = True
 
+DATE_FORMAT = 'd.m.Y'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

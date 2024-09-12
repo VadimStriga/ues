@@ -3,32 +3,38 @@ from django import forms
 from .models import Document ,Contract, Counterparty
 
 
-class DocumentForm(forms.ModelForm):
+class DateInput(forms.DateInput):
+    input_type = "date"
+    format = "%Y-%m-%d"
 
+
+class DocumentForm(forms.ModelForm):
+    conclusion_date = forms.DateField(
+        label='Дата заключения договора',
+        required=True,
+        widget=DateInput({'class': 'form-control'}),
+        localize=True,
+    )
     class Meta:
         model = Document
         fields = (
             'title',
+            'conclusion_date',
             'file',
         )
-
-
-class ContractDateInput(forms.DateInput):
-    input_type = 'date'
-    format = '%Y-%m-%d'
 
 
 class ContractForm(forms.ModelForm):
     conclusion_date = forms.DateField(
         label='Дата заключения договора',
         required=True,
-        widget = forms.SelectDateWidget,
+        widget=DateInput({'class': 'form-control'}),
         localize=True,
     )
     сompletion_date = forms.DateField(
         label='Дата завершения работ',
         required=False,
-        widget = forms.SelectDateWidget,
+        widget=DateInput({'class': 'form-control'}),
         localize=True,
     )
 
@@ -55,8 +61,8 @@ class CounterpartyForm(forms.ModelForm):
             'phone_number',
             'email',
             'main_state_registration_number',
-            'registration_reason_code',
             'tax_identification_number',
+            'registration_reason_code',
             'job_title',
             'person_full_name',
         )

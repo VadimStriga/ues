@@ -1,0 +1,54 @@
+<!-- templates/counterparties/includes/contract_documents.html -->
+{% load user_filters %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/table_sort.css' %}">
+<script src="{% static 'js/table_sort.js' %}"></script>
+<table class="table caption-top table-striped table-hover table_sort">
+  <caption>Всего документов загружено: {{ documents_count }}</caption>
+  <thead class="table-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Наименование документа</th>
+      <th scope="col">Дата подписания</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if user.is_authenticated %}
+      <form method="post" enctype="multipart/form-data" action="{% url 'counterparties:add_document' contract.id %}">
+        {% csrf_token %}
+        <tr>
+          <td></td>
+          <td>{{ form.title|addclass:"form-control" }}</td>
+          <td>{{ form.conclusion_date|addclass:"form-control" }}</td>
+          <td>{{ form.file|addclass:"form-control" }}</td>
+          <td>
+            <button type="submit" class="btn btn-link" title="Загрузить документ">
+              <img src="{% static "icons/upload.svg " %}" alt="Bootstrap" width="16" height="16">
+            </button>
+          </td>
+        </tr>
+      </form>
+    {% endif %}
+    {% for document in documents %}
+      <tr>
+        <td scope="row"></td>
+        <td>{{ document.title }}</td>
+        <td>{{ document.conclusion_date }}</td>
+        <td>
+          <a class="btn btn-link" href="{{ document.file.url}}" title="Скачать документ" download>
+            <img src="{% static "icons/download.svg " %}" alt="Bootstrap" width="16" height="16">
+          </a>
+        </td>
+        {% if user.is_authenticated %}
+          <td>
+            <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить {{ document.title }}?');" href="{% url 'counterparties:delete_document' contract.id document.id %}" title="Удалить доумент">
+              <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
+            </a>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

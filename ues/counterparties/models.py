@@ -55,6 +55,7 @@ class Contract(models.Model):
     contract_price = models.PositiveIntegerField(
         'Цена договора',
         blank=True,
+        null=True,
     )
     purchase_code = models.CharField(
         'Идентификационный код закупки',
@@ -118,15 +119,28 @@ class Counterparty(models.Model):
         'ОГРН',
         db_column='OGRN',
         unique=True,
-    )
-    registration_reason_code = models.PositiveIntegerField(
-        'КПП',
-        db_column='KPP',
+        help_text='''ОГРН - основной государственный регистрационный номер.
+                     ОГРН состоит из 13 арабских цифр.
+                     ОГРН индивидуального предпринимателя (ОГРНИП) состоит
+                     из 15 арабских цифр.'''
     )
     tax_identification_number = models.PositiveBigIntegerField(
         'ИНН',
         db_column='INN',
         unique=True,
+        help_text='''ИНН — идентификационный номер налогоплательщика. 
+                     ИНН физического лица состоит из 12 арабских цифр. 
+                     ИНН юридического лица состоит из 10 арабских цифр.'''
+    )
+    registration_reason_code = models.PositiveIntegerField(
+        'КПП',
+        db_column='KPP',
+        blank=True,
+        null=True,
+        help_text='''КПП - код причины постановки на учёт.
+                     КПП юридического лица состоит из 9 арабских цифр.
+                     Индивидуальные предприниматели не имеют КПП
+                     (приказ ФНС №ММВ-7-6/435).'''
     )
     job_title = models.CharField(
         'Должность руководителя',

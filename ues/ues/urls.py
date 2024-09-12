@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 
 urlpatterns = [
+    path('accounting/', include('electricity_accounting.urls', namespace='accounting')),
     path('admin/', admin.site.urls),
     path('auth/', include('users.urls', namespace='users')),
     path('auth/', include('django.contrib.auth.urls')),
