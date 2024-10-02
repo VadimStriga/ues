@@ -2,7 +2,7 @@
 {% load static %}
 {% load user_filters %}
 
-<form id="main" method="post" action="{% url "accounting:add_readings" point.id %}">
+<form id="main" method="post" action="{% url "accounting:add_calculation" point.id %}">
 <table class="table table-striped table-hover">
   <thead class="table-dark">
     <tr>
@@ -27,57 +27,57 @@
   <tbody>
     {% if user.is_authenticated %}
       <tr id="add_readings">
-          {% csrf_token %}
-          <td class="align-middle">{{ current_meter_number }}</td>
-          <td class="align-middle">{{ readings_form.entry_date|addclass:"form-control" }}</td> 
-          <td class="align-middle">{{ readings_form.readings|addclass:"form-control" }}</td>
-          <td class="align-middle">
-            <input id="pr" type="hidden" value="{{previous_readings}}">
-            <output id="dr">0</output>
-          </td>
-          <td class="align-middle">
-            <output id="tc">{{ point.transformation_coefficient }}</output>
-          </td>
-          <td class="align-middle">
-            <output id="amount" for="dr tc">0</output>
-          </td>
-          <td class="align-middle">
-            <output id="deduction">0</output>
-          </td>
-          <td class="align-middle">
-            <output id="losses">{{ point.losses }}</output>
-          </td>
-          <td class="align-middle">
-            <output id="constant_losses">{{ point.constant_losses }}</output>
-          </td>
-          <td class="align-middle">
-            <output id="result_amount" for="dr tc">0</output>
-          </td>
-          <td class="align-middle">
-            {% if is_population %}
-              <output id="tariff1">{{ tariff1 }}</output>
-              <br>
-              <output id="tariff2">{{ tariff2 }}</output>
-              <br>
-              <output id="tariff3">{{ tariff3 }}</output>
-            {% else %}
-              <output id="tariff1">{{ tariff1 }}</output>
-              <output id="tariff2" class="d-none">{{ tariff2 }}</output>
-              <output id="tariff3" class="d-none">{{ tariff3 }}</output>
-            {% endif %}
+        {% csrf_token %}
+        <td class="align-middle">{{ current_meter_number }}</td>
+        <td class="align-middle">{{ calculation_form.entry_date|addclass:"form-control" }}</td> 
+        <td class="align-middle">{{ calculation_form.readings|addclass:"form-control" }}</td>
+        <td class="align-middle">
+          <input id="pr" type="hidden" value="{{previous_readings}}">
+          <output id="dr">0</output>
+        </td>
+        <td class="align-middle">
+          <output id="tc">{{ point.transformation_coefficient }}</output>
+        </td>
+        <td class="align-middle">
+          <output id="amount" for="dr tc">0</output>
+        </td>
+        <td class="align-middle">
+          <output id="deduction">{{ deductible_amount }}</output>
+        </td>
+        <td class="align-middle">
+          <output id="losses">{{ point.losses }}</output>
+        </td>
+        <td class="align-middle">
+          <output id="constant_losses">{{ point.constant_losses }}</output>
+        </td>
+        <td class="align-middle">
+          <output id="result_amount" for="dr tc">0</output>
+        </td>
+        <td class="align-middle">
+          {% if is_population %}
+            <output id="tariff1">{{ tariff1 }}</output>
             <br>
-            <output id="margin">{{ point.margin }}</output>
-          </td>
-          <td class="align-middle">
-            <output id="accrued" for="result_amount tariff1 tariff2 tariff3 margin">0</output>
+            <output id="tariff2">{{ tariff2 }}</output>
             <br>
-            <output id="accrued_NDS" for="accrued">0</output>
-          </td>
-          <td class="align-middle">
-            <button type="submit" class="btn btn-link" title="Сохранить показания">
-              <img src="{% static "icons/floppy.svg " %}" alt="Bootstrap" width="16" height="16">
-            </button>
-          </td>
+            <output id="tariff3">{{ tariff3 }}</output>
+          {% else %}
+            <output id="tariff1">{{ tariff1 }}</output>
+            <output id="tariff2" class="d-none">{{ tariff2 }}</output>
+            <output id="tariff3" class="d-none">{{ tariff3 }}</output>
+          {% endif %}
+          <br>
+          <output id="margin">{{ point.margin }}</output>
+        </td>
+        <td class="align-middle">
+          <output id="accrued" for="result_amount tariff1 tariff2 tariff3 margin">0</output>
+          <br>
+          <output id="accrued_NDS" for="accrued">0</output>
+        </td>
+        <td class="align-middle">
+          <button type="submit" class="btn btn-link" title="Сохранить показания">
+            <img src="{% static "icons/floppy.svg " %}" alt="Bootstrap" width="16" height="16">
+          </button>
+        </td> 
       </tr>
     {% endif %}
     {% for calculation in calculations %}
@@ -93,11 +93,15 @@
         <td class="align-middle">{{ calculation.constant_losses }}</td>
         <td class="align-middle">{{ calculation.result_amount }}</td>
         <td class="align-middle">
+          {% if calculation.tariff1 == calculation.tariff2%}
+            {{ calculation.tariff1 }}
+          {% else %}
             {{ calculation.tariff1 }}
             <br>
             {{ calculation.tariff2 }}
             <br>
             {{ calculation.tariff3 }}
+          {% endif %}
             <br>
             {{ calculation.margin }}
         </td>
@@ -113,7 +117,7 @@
           <a class="btn btn-link" href="#" title="Редактировать">
             <img src="{% static "icons/pencil-square.svg " %}" alt="Bootstrap" width="16" height="16">
           </a>
-          <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить показания от {{ calculation.entry_date }}?');" href="{% url 'accounting:del_readings' point.id calculation.id %}" title="Удалить">
+          <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить показания от {{ calculation.entry_date }}?');" href="{% url 'accounting:del_calculation' point.id calculation.id %}" title="Удалить">
             <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
           </a>
         </td>

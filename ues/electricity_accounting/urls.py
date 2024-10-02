@@ -67,13 +67,18 @@ urlpatterns = [
         name='tariffs_list',
     ),
     path(
-        'point_detail/<int:point_id>/readings/',
-        views.add_readings,
-        name='add_readings',
+        'point_detail/<int:point_id>/calculations/add_calculation/',
+        views.add_calculation,
+        name='add_calculation',
     ),
     path(
-        'point_detail/<int:point_id>/readings/<int:calculation_id>/delete/',
-        views.del_readings,
-        name='del_readings',
+        'point_detail/<int:point_id>/calculations/<int:calculation_id>/delete/',
+        views.del_calculation,
+        name='del_calculation',
+    ),
+    path(
+        'point_detail/<int:point_id>/',
+        views.add_lower_point,
+        name='add_lower_point',
     ),
 ]

@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -7,14 +9,19 @@ from .forms import (CalculationForm,
                     CurrentTransformerForm,
                     ElectricityMeterForm,
                     ElectricityMeteringPointForm,
-                    TariffForm)
+                    TariffForm,
+                    InterconnectedPoints)
 from .models import (NDS,
                      Calculation,
                      CurrentTransformer,
+                     InterconnectedPoints,
                      ElectricityMeter,
                      ElectricityMeteringPoint,
                      Tariff)
-from .utils import (calculation_accrued,
+from .utils import (get_deductible_amount,
+                    calculation_accrued,
+                    calculation_previous_entry_date,
+                    calculation_previous_readings,
                     calculation_result_amount,
                     calculation_tariff)
 
@@ -122,13 +129,20 @@ def point_create(request, contract_id):
 def point_detail(request, point_id):
     point = get_object_or_404(ElectricityMeteringPoint, pk=point_id)
     calculations = Calculation.objects.filter(point=point_id)
-    readings_form = CalculationForm()
+    calculation_form = CalculationForm()
+    td = date.today()
+    deductible_amount = get_deductible_amount(point_id, td)
     if len(calculations) != 0:
         previous_readings = calculations[0].readings
     else:
         previous_readings = 0
     meters = ElectricityMeter.objects.filter(point=point_id).filter(is_active=True)
-    current_meter_number = meters[0].number
+    if len(meters) != 0:
+        current_meter_number = meters[0].number
+        alert_flag = False
+    else:
+        current_meter_number = 0
+        alert_flag = True
     old_meters = ElectricityMeter.objects.filter(point=point_id).filter(is_active=False)
     transformers = CurrentTransformer.objects.filter(point=point_id).filter(is_active=True)
     old_transformers = CurrentTransformer.objects.filter(point=point_id).filter(is_active=False)
@@ -141,8 +155,10 @@ def point_detail(request, point_id):
         'tariff1': tariff1,
         'tariff2': tariff2,
         'tariff3': tariff3,
-        'readings_form': readings_form,
+        'calculation_form': calculation_form,
+        'deductible_amount': deductible_amount,
         'meters': meters,
+        'alert_flag': alert_flag,
         'current_meter_number': current_meter_number,
         'old_meters': old_meters,
         'transformers': transformers,
@@ -196,43 +212,53 @@ def tariffs_list(request):
 
 
 @login_required
-def add_readings(request, point_id):
+def add_calculation(request, point_id):
     point = get_object_or_404(ElectricityMeteringPoint, pk=point_id)
-    readings_form = CalculationForm(request.POST or None)
-    if readings_form.is_valid():
-        calculation = readings_form.save(commit=False)
-        calculation.point = point
-        calculation.meter = ElectricityMeter.objects.filter(point=point_id).filter(is_active=True)[0]
-        calculation.previous_entry_date = Calculation.objects.filter(point=point_id)[0].entry_date
-        calculation.previous_readings = Calculation.objects.filter(point=point_id)[0].readings
-        calculation.difference_readings = calculation.readings - calculation.previous_readings
-        calculation.transformation_coefficient = point.transformation_coefficient
-        calculation.amount = calculation.difference_readings * calculation.transformation_coefficient
-        calculation.deductible_amount = 0
-        calculation.losses = point.losses
-        calculation.constant_losses = point.constant_losses
-        calculation.result_amount = calculation_result_amount(calculation.amount,
-                                                              calculation.deductible_amount,
-                                                              calculation.losses,
-                                                              calculation.constant_losses)
-        calculation.tariff1, calculation.tariff2, calculation.tariff3, is_population = calculation_tariff(point_id)
-        calculation.margin = point.margin
-        calculation.accrued = calculation_accrued(calculation.result_amount,
-                                                  calculation.tariff1,
-                                                  calculation.tariff2,
-                                                  calculation.tariff3,
-                                                  calculation.margin)
-        calculation.accrued_NDS = round((calculation.accrued + calculation.accrued * NDS / 100), 2)
-        calculation.save()
+    calculation_form = CalculationForm(request.POST or None)
+    try:
+        if calculation_form.is_valid():
+            calculation = calculation_form.save(commit=False)
+            calculation.point = point
+            calculation.meter = ElectricityMeter.objects.filter(point=point_id).filter(is_active=True)[0]
+            calculation.previous_entry_date = calculation_previous_entry_date(point_id)
+            calculation.previous_readings = calculation_previous_readings(point_id, calculation.readings)
+            calculation.difference_readings = round((calculation.readings - calculation.previous_readings), 2)
+            calculation.transformation_coefficient = point.transformation_coefficient
+            calculation.amount = calculation.difference_readings * calculation.transformation_coefficient
+            calculation.deductible_amount = get_deductible_amount(point_id, calculation.entry_date)
+            calculation.losses = point.losses
+            calculation.constant_losses = point.constant_losses
+            calculation.result_amount = calculation_result_amount(calculation.amount,
+                                                                  calculation.deductible_amount,
+                                                                  calculation.losses,
+                                                                  calculation.constant_losses)
+            calculation.tariff1, calculation.tariff2, calculation.tariff3, is_population = calculation_tariff(point_id)
+            calculation.margin = point.margin
+            calculation.accrued = calculation_accrued(calculation.result_amount,
+                                                      calculation.tariff1,
+                                                      calculation.tariff2,
+                                                      calculation.tariff3,
+                                                      calculation.margin)
+            calculation.accrued_NDS = round((calculation.accrued + calculation.accrued * NDS / 100), 2)
+            calculation.save()
+            return redirect('accounting:point_detail', point_id = point_id)
+    except IndexError:
         return redirect('accounting:point_detail', point_id = point_id)
-    context = {
-        'readings_form': readings_form,
-    }
-    return render(request, 'accounting/add_readings.html', context)
 
 
 @login_required
-def del_readings(request, point_id, calculation_id):
+def del_calculation(request, point_id, calculation_id):
     calculation = get_object_or_404(Calculation, pk=calculation_id)
     calculation.delete()
     return redirect('accounting:point_detail', point_id = point_id)
+
+
+@login_required
+def add_lower_point(request, point_id):
+    point = get_object_or_404(ElectricityMeteringPoint, pk=point_id)
+    form = InterconnectedPoints(request.POST or None)
+    if form.is_valid():
+        deduction_amount = form.save(commit=False)
+        deduction_amount.head_point = point
+        deduction_amount.save()
+        return redirect('accounting:point_detail', point_id = point_id)

@@ -261,6 +261,7 @@ class Calculation(models.Model):
     point = models.ForeignKey(
         ElectricityMeteringPoint,
         on_delete=models.CASCADE,
+        related_name='calculations'
     )
     meter = models.ForeignKey(
         ElectricityMeter,
@@ -305,3 +306,32 @@ class Calculation(models.Model):
         verbose_name = 'Показания'
         verbose_name_plural = 'Показания'
         ordering = ('-entry_date',)
+
+
+class InterconnectedPoints(models.Model):
+    """The model for creating links between accounting points.
+    It is required to deduct the amount of electricity consumed by the
+    counterparty from the volume recorded in the higher-level metering device.
+    """
+    head_point = models.ForeignKey(
+        ElectricityMeteringPoint,
+        on_delete=models.CASCADE,
+        verbose_name='Головной учёт',
+        related_name="head_point",
+    )
+    lower_point = models.ForeignKey(
+        ElectricityMeteringPoint,
+        on_delete=models.CASCADE,
+        verbose_name='Нижестоящий учёт',
+        related_name="lower_point",
+    )
+
+    class Meta:
+        verbose_name = 'Вычет'
+        verbose_name_plural = 'Вычеты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['head_point', 'lower_point'],
+                name='unique_deduction',
+            )
+        ]

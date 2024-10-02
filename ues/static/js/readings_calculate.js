@@ -1,4 +1,4 @@
-let main = document.tr.add_readings;
+let main = document.forms.main;
 let field = main.elements;
 main.addEventListener('input', function(e) {
   if (e.target !== e.currentTarget) {
@@ -9,10 +9,10 @@ main.addEventListener('input', function(e) {
       const base = cel.value;
       let output = cel.nextElementSibling;
       let val = parseFloat(input.value) - parseFloat(base);
-      output.value = val;
+      output.value = val.toFixed(2);
     });
-    field.amount.value = Number(field.dr.value) * Number(field.tc.value);
-    field.result_amount.value = Number(field.amount.value) - Number(field.deduction.value) + (Number(field.amount.value) - Number(field.deduction.value))/100*Number(field.losses.value) + Number(field.constant_losses.value);
+    field.amount.value = (Number(field.dr.value) * Number(field.tc.value)).toFixed(2);
+    field.result_amount.value = (Number(field.amount.value) - Number(field.deduction.value) + (Number(field.amount.value) - Number(field.deduction.value))/100*Number(field.losses.value) + Number(field.constant_losses.value)).toFixed(2);
     
     let resultAmount = Number(field.result_amount.value);
     let tariff1 = Number(field.tariff1.value);

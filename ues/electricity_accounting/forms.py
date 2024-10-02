@@ -2,6 +2,7 @@ from django import forms
 
 from .models import (Calculation,
                      CurrentTransformer,
+                     InterconnectedPoints,
                      ElectricityMeter,
                      ElectricityMeteringPoint,
                      Tariff)
@@ -66,6 +67,14 @@ class CurrentTransformerForm(forms.ModelForm):
         widgets = {
             'is_active': BooleanDropdown(),
         }
+
+
+class InterconnectedPointsForm(forms.ModelForm):
+    class Meta:
+        model = InterconnectedPoints
+        fields = (
+            'lower_point',
+        )
 
 
 class ElectricityMeterForm(forms.ModelForm):

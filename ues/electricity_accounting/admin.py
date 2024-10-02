@@ -4,7 +4,8 @@ from .models import (Calculation,
                      CurrentTransformer,
                      ElectricityMeter,
                      ElectricityMeteringPoint,
-                     Tariff)
+                     Tariff,
+                     InterconnectedPoints)
 
 
 @admin.register(Calculation)
@@ -41,6 +42,15 @@ class CurrentTransformerAdmin(admin.ModelAdmin):
         'installation_date',
         'date_of_next_verification',
         'point',
+    )
+
+
+@admin.register(InterconnectedPoints)
+class InterconnectedPointsAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'head_point',
+        'lower_point',
     )
 
 
