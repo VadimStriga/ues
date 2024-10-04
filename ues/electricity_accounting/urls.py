@@ -81,4 +81,9 @@ urlpatterns = [
         views.add_lower_point,
         name='add_lower_point',
     ),
+    path(
+        'point_detail/<int:point_id>/calculations/<int:calculation_id>/download_xlsx_document',
+        views.download_xlsx_document,
+        name='download_xlsx_document',
+    ),
 ]

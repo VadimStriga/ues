@@ -1,8 +1,11 @@
 from datetime import date
+from django.http import HttpResponse
 
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from transliterate import translit
+import xlsxwriter
 
 from counterparties.models import Contract
 from .forms import (CalculationForm,
@@ -23,7 +26,8 @@ from .utils import (get_deductible_amount,
                     calculation_previous_entry_date,
                     calculation_previous_readings,
                     calculation_result_amount,
-                    calculation_tariff)
+                    calculation_tariff,
+                    create_xlsx_document)
 
 
 NUMBER_OF_POINTS = 25
@@ -262,3 +266,18 @@ def add_lower_point(request, point_id):
         deduction_amount.head_point = point
         deduction_amount.save()
         return redirect('accounting:point_detail', point_id = point_id)
+
+
+def download_xlsx_document(request, point_id, calculation_id):
+    calculation = get_object_or_404(Calculation, pk=calculation_id)
+    point = get_object_or_404(ElectricityMeteringPoint, pk=point_id)
+    counterparty = point.contract.counterparty.short_name
+    counterparty_translit = translit(counterparty, reversed=True)
+    month = calculation.entry_date.strftime('%B')
+    year = calculation.entry_date.strftime('%Y')
+    filename = f'Raschet za {month} {year} {counterparty_translit}.xlsx'
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    xlsx_data = create_xlsx_document(request, point_id, calculation_id)
+    response.write(xlsx_data)
+    return response
