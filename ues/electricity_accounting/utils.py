@@ -2,9 +2,15 @@ import io
 import locale
 
 from django.shortcuts import get_object_or_404
+from number_to_string import get_string_by_number
 import xlsxwriter
 
-from .models import NDS, Calculation, Contract, ElectricityMeter, ElectricityMeteringPoint, Tariff, InterconnectedPoints
+from .models import (NDS,
+                     Calculation,
+                     ElectricityMeter,
+                     ElectricityMeteringPoint,
+                     Tariff,
+                     InterconnectedPoints)
 
 
 def calculation_tariff(point_id):
@@ -180,6 +186,8 @@ def create_xlsx_document(request, point_id, calculation_id):
         worksheet1.set_column(row, col, width=12)
         col +=1
     
+    sum_accrued = 0
+    sum_accrued_nds = 0
     for calculation in calculations:
         row += 2
         col = 0
@@ -198,12 +206,16 @@ def create_xlsx_document(request, point_id, calculation_id):
             calculation.accrued,
             calculation.accrued_NDS,
         )
+        sum_accrued_nds += calculation.accrued_NDS
+        sum_accrued += calculation.accrued
         for item in calculation_info:
             worksheet1.write(row, col, item, text)
             col +=1
+    string_accrued_nds = get_string_by_number(round(sum_accrued_nds, 2))
+    nds = sum_accrued_nds - sum_accrued
+    string_nds = get_string_by_number(round(nds, 2))
 
     row += 2
-    print(row)
     worksheet1.write(row, 4, 'ВСЕГО:', text)
     if len(calculations) > 1:
         worksheet1.write_formula(row, 6, '=SUM(G9:{0}{1})'.format('G', row-1), text)
@@ -217,7 +229,7 @@ def create_xlsx_document(request, point_id, calculation_id):
     worksheet1.write(row+4, 6, f'{user.post}', text)
     worksheet1.write(row+4, 10, f'{user_name}', text)
 
-    print(row)
+
     worksheet2 = workbook.add_worksheet('Акт')
     worksheet2.write('A1', 'Исполнитель:', text)
     worksheet2.write('A2', 'Адрес:', text)
@@ -240,19 +252,24 @@ def create_xlsx_document(request, point_id, calculation_id):
         worksheet2.write(row2, col2, item, th)
         worksheet2.set_column(row2, col2, width=12)
         col2 +=1
-
     worksheet2.set_column(0, 0, width=25)
     worksheet2.write('A10', 'Эл/энергия (нерег.цены)', text)
     worksheet2.write('B10', 'кВт*ч', text)
     worksheet2.write('C10', '=Расчет!{0}{1}'.format('G', row+1), text)
     worksheet2.write('D10', f'{calculation.tariff1}', text)
-    worksheet2.write('E10', '=Расчет!{0}{1}'.format('E', row+1), text)
+    worksheet2.write('E10', '=Расчет!{0}{1}'.format('L', row+1), text)
     worksheet2.write('F10', f'{NDS}', text)
     worksheet2.write('G10', '=Расчет!{0}{1}'.format('M', row+2), text)
     worksheet2.write('H10', '=Расчет!{0}{1}'.format('M', row+1), text)
+    worksheet2.write('A12', f'Всего на сумму {string_accrued_nds}', text)
+    worksheet2.write('A13', f'в т.ч. НДС {NDS}% - {string_nds}', text)
+    worksheet2.write('A15', 'Покупатель претензий по объёму и качеству электроэнергии претензий не имеет.', text)
+    worksheet2.write('B18', f'Исполнитель ________ {user_name}', text)
+    worksheet2.write('F18', 'Покупатель ________ ', text)
+    worksheet2.write('C19', 'м.п.', text)
+    worksheet2.write('G19', 'м.п.', text)
+    worksheet2.write('B21', 'доверенность №', text)
 
     workbook.close()
     xlsx_data = output.getvalue()
     return xlsx_data
-
-
