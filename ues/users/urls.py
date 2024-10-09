@@ -11,24 +11,24 @@ from django.urls import path
 
 from . import views
 
-app_name = "users"
+app_name = 'users'
 
 urlpatterns = [
-    path("login/",
-         LoginView.as_view(template_name="users/login.html"),
-         name="login",
+    path('login/',
+         LoginView.as_view(template_name='users/login.html'),
+         name='login',
          ),
-    path("logout/",
-         LogoutView.as_view(template_name="users/logged_out.html"),
-         name="logout",
+    path('logout/',
+         LogoutView.as_view(template_name='users/logged_out.html'),
+         name='logout',
          ),
-    path("password_change/done/",
-        PasswordChangeDoneView.as_view(template_name="users/password_change_done.html"),
-        name="password_change_done",
+    path('password_change/done/',
+        PasswordChangeDoneView.as_view(template_name='users/password_change_done.html'),
+        name='password_change_done',
         ),
-    path("password_change/",
-        PasswordChangeView.as_view(template_name="users/password_change_form.html"),
-        name="password_change_form",
+    path('password_change/',
+        PasswordChangeView.as_view(template_name='users/password_change_form.html'),
+        name='password_change_form',
         ),
 #    path("reset/done/",
 #        PasswordResetCompleteView.as_view(template_name="users/password_reset_complete.html"),
@@ -47,19 +47,19 @@ urlpatterns = [
 #        name="password_reset_form",
 #        ),
     path(
-        "users/list/",
+        'users/list/',
         views.users_list,
-        name="users_list",  
+        name='users_list',  
     ),
     path(
-        "users/profile/edit",
+        'users/profile/edit',
         views.user_edit,
-        name="user_edit",
+        name='user_edit',
     ),
     path(
-        "users/profile/<int:user_id>/",
+        'users/profile/<int:user_id>/',
         views.user_profile,
-        name="user_profile",
+        name='user_profile',
     ),
-    path("signup/", views.SignUp.as_view(), name="signup"),
+    path('signup/', views.SignUp.as_view(), name='signup'),
 ]

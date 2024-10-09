@@ -21,7 +21,9 @@
         Наценка
       </th>
       <th class="align-middle" scope="col" title="Начислено без НДС, руб., начислено c НДС, руб.">Начислено</th>
-      <th class="align-middle" scope="col"></th>
+      {% if user.is_authenticated %}
+        <th class="align-middle" scope="col"></th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -68,6 +70,7 @@
           <br>
           <output id="margin">{{ point.margin }}</output>
         </td>
+
         <td class="align-middle">
           <output id="accrued" for="result_amount tariff1 tariff2 tariff3 margin">0</output>
           <br>
@@ -110,17 +113,22 @@
           <br>
           {{ calculation.accrued_NDS }}
         </td>
-        <td class="align-middle">
-          <a class="btn btn-link" href="{% url "accounting:download_xlsx_document" point.id calculation.id %}" title="Сохранить в формате .xlsx">
-            <img src="{% static "icons/filetype-xls.svg " %}" alt="Bootstrap" width="16" height="16">
-          </a>
-          <a class="btn btn-link" href="#" title="Редактировать">
-            <img src="{% static "icons/pencil-square.svg " %}" alt="Bootstrap" width="16" height="16">
-          </a>
-          <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить показания от {{ calculation.entry_date }}?');" href="{% url 'accounting:del_calculation' point.id calculation.id %}" title="Удалить">
-            <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
-          </a>
-        </td>
+        {% if user.is_authenticated %}
+          <td class="align-middle">
+            <a class="btn btn-link" href="{% url "accounting:download_xlsx_document" point.id calculation.id %}" title="Сохранить в формате xlsx">
+              <img src="{% static "icons/filetype-xls.svg " %}" alt="Bootstrap" width="16" height="16">
+            </a>
+            <a class="btn btn-link" href="{% url "accounting:calculation_tariff_update" point.id calculation.id %}" title="Обновить тариф">
+              <img src="{% static "icons/arrow-repeat.svg " %}" alt="Bootstrap" width="16" height="16">
+            </a>
+            <a class="btn btn-link" href="{% url "accounting:calculation_edit" point.id calculation.id %}" title="Редактировать">
+              <img src="{% static "icons/pencil-square.svg " %}" alt="Bootstrap" width="16" height="16">
+            </a>
+            <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить показания от {{ calculation.entry_date }}?');" href="{% url 'accounting:del_calculation' point.id calculation.id %}" title="Удалить">
+              <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
+            </a>
+          </td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

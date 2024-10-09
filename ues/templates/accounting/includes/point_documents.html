@@ -1,4 +1,4 @@
-<!-- templates/counterparties/includes/contract_documents.html -->
+<!-- templates/accounting/includes/point_documents.html -->
 {% load user_filters %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/table_sort.css' %}">
@@ -16,13 +16,13 @@
   </thead>
   <tbody>
     {% if user.is_authenticated %}
-      <form method="post" enctype="multipart/form-data" action="{% url 'counterparties:add_document' contract.id %}">
+      <form method="post" enctype="multipart/form-data" action="{% url 'accounting:document_add' point.id %}">
         {% csrf_token %}
         <tr>
           <td></td>
-          <td>{{ form.title|addclass:"form-control" }}</td>
-          <td>{{ form.conclusion_date|addclass:"form-control" }}</td>
-          <td>{{ form.file|addclass:"form-control" }}</td>
+          <td>{{ document_form.title|addclass:"form-control" }}</td>
+          <td>{{ document_form.conclusion_date|addclass:"form-control" }}</td>
+          <td>{{ document_form.file|addclass:"form-control" }}</td>
           <td>
             <button type="submit" class="btn btn-link" title="Загрузить документ">
               <img src="{% static "icons/upload.svg " %}" alt="Bootstrap" width="16" height="16">
@@ -43,7 +43,7 @@
         </td>
         {% if user.is_authenticated %}
           <td>
-            <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить {{ document.title }}?');" href="{% url 'counterparties:delete_document' contract.id document.id %}" title="Удалить документ">
+            <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить {{ document.title }}?');" href="{% url 'accounting:document_delete' point.id document.id %}" title="Удалить документ">
               <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
             </a>
           </td>

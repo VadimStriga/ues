@@ -7,7 +7,9 @@
     <div class="row g-0">
       <div class="col-md-4">
         {% thumbnail meter.photo "200x200" crop="center" upscale=True as im %}
-          <img class="img-thumbnail" height="200px" src="{{ im.url }}">
+          <img class="img-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+        {% empty %}
+          <img class="img-thumbnail" src="{% static "icons/meter.png" %}" width="{{ im.width }}" height="{{ im.height }}">
         {% endthumbnail %}
       </div>
       <div class="col-md-8">
@@ -49,7 +51,9 @@
       <div class="row g-0">
         <div class="col-md-4">
           {% thumbnail old_meter.photo "200x200" crop="center" upscale=True as im %}
-            <img class="img-thumbnail" height="200px" src="{{ im.url }}">
+            <img class="img-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+          {% empty %}
+             <img class="img-thumbnail" src="{% static "icons/meter.png" %}" width="{{ im.width }}" height="{{ im.height }}">
           {% endthumbnail %}
         </div>
         <div class="col-md-8">

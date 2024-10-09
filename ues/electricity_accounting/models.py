@@ -7,11 +7,41 @@ NDS = 20
 
 
 def point_directory_path(instance, filename):
-    return "contracts/contract_{0}/points/point_{1}/{2}".format(instance.point.contract.title, instance.point.name, filename)
+    return 'contracts/contract_{0}/points/point_{1}/{2}'.format(instance.point.contract.title, instance.point.name, filename)
 
 
 def meter_directory_path(instance, filename):
-    return "contracts/contract_{0}/points/point_{1}/{2}".format(instance.meter.point.contract.title, instance.meter.point.name, filename)
+    return 'contracts/contract_{0}/points/point_{1}/{2}'.format(instance.meter.point.contract.title, instance.meter.point.name, filename)
+
+
+class Document(models.Model):
+    point = models.ForeignKey(
+        'ElectricityMeteringPoint',
+        on_delete=models.CASCADE,
+        related_name='documents',
+    )
+    conclusion_date = models.DateField(
+        'Дата подписания документа',
+        auto_now=False,
+        auto_now_add=False,
+        null=True,
+        blank=True,
+    )
+    title = models.CharField(
+        'Наименование документа',
+        max_length=255,
+    )
+    file = models.FileField(
+        upload_to=point_directory_path,
+    )
+
+    def __str__(self) -> str:
+        return self.title
+    
+    class Meta:
+        verbose_name = 'Документ'
+        verbose_name_plural = 'Документы'
+        ordering = ('conclusion_date',)
 
 
 class ElectricityMeteringPoint(models.Model):
@@ -124,7 +154,7 @@ class ElectricityMeter(models.Model):
         related_name='meters',
     )
     photo = models.ImageField(
-        "Фотография счётчика",
+        'Фотография счётчика',
         upload_to='contracts/',
         blank=True,
     )
@@ -167,7 +197,7 @@ class CurrentTransformer(models.Model):
         related_name='transformers',
     )
     photo = models.ImageField(
-        "Фотография трансформатора тока",
+        'Фотография трансформатора тока',
         upload_to=point_directory_path,
         blank=True,
     )
@@ -257,7 +287,9 @@ class Tariff(models.Model):
 
 
 class Calculation(models.Model):
-    '''The model for calculating the amount of electricity consumed and for calculating the cost of this volume'''
+    """The model for calculating the amount of electricity consumed and for
+    calculating the cost of this volume.
+    """
     point = models.ForeignKey(
         ElectricityMeteringPoint,
         on_delete=models.CASCADE,
@@ -317,13 +349,16 @@ class InterconnectedPoints(models.Model):
         ElectricityMeteringPoint,
         on_delete=models.CASCADE,
         verbose_name='Головной учёт',
-        related_name="head_point",
+        related_name='head_point',
     )
     lower_point = models.ForeignKey(
         ElectricityMeteringPoint,
         on_delete=models.CASCADE,
         verbose_name='Нижестоящий учёт',
-        related_name="lower_point",
+        related_name='lower_point',
+        help_text=('Объём потребленной электроэнрегии нижестоящей точки учета',
+                   'вычитается из объёма потреблённой электроэнергии',
+                   'вышестоящей точки учёта.'),
     )
 
     class Meta:

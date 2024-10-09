@@ -4,8 +4,8 @@ from .models import Document ,Contract, Counterparty
 
 
 class DateInput(forms.DateInput):
-    input_type = "date"
-    format = "%Y-%m-%d"
+    input_type = 'date'
+    format = '%Y-%m-%d'
 
 
 class DocumentForm(forms.ModelForm):

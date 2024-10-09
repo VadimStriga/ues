@@ -2,13 +2,16 @@
 
 {% extends "base.html" %}
 {% load thumbnail %}
+{% load static %}
 {% block title  %}Профиль пользователя{% endblock title  %}
 {% block content %}
 <main>
   <div class="row">
     <div class="col-md-2 text-center">
       {% thumbnail profile.photo "200x200" crop="center" upscale=True as im %}
-        <img class="img-thumbnail" src="{{ im.url }}">
+        <img class="img-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+      {% empty %}
+        <img class="img-thumbnail" src="{% static "icons/user.png" %}" width="{{ im.width }}" height="{{ im.height }}">
       {% endthumbnail %}
     </div>
     <div class="col-lg-3 col-md-12">
@@ -33,7 +36,10 @@
         </li>
         <li class="list-group-item">
           Электронная почта: {{ profile.email }}
-      </li>
+        </li>
+        <li class="list-group-item">
+          Доверенность: {{ profile.letter_of_attorney }}
+        </li>
       </ul>
       {% if profile.id == user.id %}
         <buttomn>

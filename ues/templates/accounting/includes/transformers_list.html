@@ -6,8 +6,10 @@
     <div class="card mb-3" style="max-width: 33%;">
       <div class="row g-0">
         <div class="col-md-4">
-          {% thumbnail transformer.photo "200x200" crop="center" upscale=True as im %}
-            <img class="img-thumbnail" height="200px" src="{{ im.url }}">
+          {% thumbnail transformer.photo "150x150" crop="center" upscale=True as im %}
+            <img class="img-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+          {% empty %}
+            <img class="img-thumbnail" src="{% static "icons/current_transformer.png" %}" width="{{ im.width }}" height="{{ im.height }}">
           {% endthumbnail %}
         </div>
         <div class="col-md-8">
@@ -38,47 +40,49 @@
   {% endfor %}
 </div>
 <div class="row">
- {% if old_transformers %}
-   <p class="d-inline-flex gap-1">
-     <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTransformers" aria-expanded="false" aria-controls="collapseTransformers">
-       Демонтированные трансформаторы тока
-     </button>
-   <p>
- {% endif %}
- {% for old_transformer in old_transformers %}
-   <div class="collapse" id="collapseTransformers">
-     <div class="card mb-3" style="max-width: 33%;">
-       <div class="row g-0">
-         <div class="col-md-4">
-           {% thumbnail old_transformer.photo "200x200" crop="center" upscale=True as im %}
-             <img class="img-thumbnail" height="200px" src="{{ im.url }}">
-           {% endthumbnail %}
-         </div>
-         <div class="col-md-8">
-           <div class="card-body">
-             <h5 class="card-title">Трансформатор тока</h5>
-             <p class="card-text">
-               <b>Марка:</b> {{ old_transformer.mark }}</br>
-               <b>Заводской номер:</b> {{ old_transformer.number }}</br>
-               <b>Дата установки:</b> {{ old_transformer.installation_date }}</br>
-               <b>Дата следующей поверки:</b> {{ old_transformer.date_of_next_verification }}
+  {% if old_transformers %}
+    <p class="d-inline-flex gap-1">
+      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTransformers" aria-expanded="false" aria-controls="collapseTransformers">
+        Демонтированные трансформаторы тока
+      </button>
+    <p>
+  {% endif %}
+  {% for old_transformer in old_transformers %}
+    <div class="collapse" id="collapseTransformers">
+      <div class="card mb-3" style="max-width: 33%;">
+        <div class="row g-0">
+          <div class="col-md-4">
+            {% thumbnail old_transformer.photo "150x150" crop="center" upscale=True as im %}
+              <img class="img-thumbnail" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+            {% empty %}
+              <img class="img-thumbnail" src="{% static "icons/current_transformer.png" %}" width="{{ im.width }}" height="{{ im.height }}">
+            {% endthumbnail %}
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">Трансформатор тока</h5>
+              <p class="card-text">
+                <b>Марка:</b> {{ old_transformer.mark }}</br>
+                <b>Заводской номер:</b> {{ old_transformer.number }}</br>
+                <b>Дата установки:</b> {{ old_transformer.installation_date }}</br>
+                <b>Дата следующей поверки:</b> {{ old_transformer.date_of_next_verification }}
+              </p>
+              <p class="card-text"></p>
+              <p class="card-text">
+               <small class="text-body-secondary">Статус: недействующий</small>
+               {% if user.is_authenticated %}
+                 <a class="btn btn-link" href="{% url 'accounting:transformer_edit' old_transformer.point.id old_transformer.id %}" title="Редактировать">
+                   <img src="{% static "icons/pencil-square.svg " %}" alt="Bootstrap" width="16" height="16">
+                 </a>
+                 <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить договор?');" href="{% url 'accounting:transformer_delete' old_transformer.point.id old_transformer.id %}" title="Удалить">
+                   <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
+                 </a>
+               {% endif %}
              </p>
-             <p class="card-text"></p>
-             <p class="card-text">
-              <small class="text-body-secondary">Статус: недействующий</small>
-              {% if user.is_authenticated %}
-                <a class="btn btn-link" href="{% url 'accounting:transformer_edit' old_transformer.point.id old_transformer.id %}" title="Редактировать">
-                  <img src="{% static "icons/pencil-square.svg " %}" alt="Bootstrap" width="16" height="16">
-                </a>
-                <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить договор?');" href="{% url 'accounting:transformer_delete' old_transformer.point.id old_transformer.id %}" title="Удалить">
-                  <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
-                </a>
-              {% endif %}
-            </p>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
- {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
 </div>

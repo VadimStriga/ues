@@ -62,6 +62,21 @@ urlpatterns = [
         name='points_list',
     ),
     path(
+        'tariff_create/',
+        views.tariff_create,
+        name='tariff_create',
+    ),
+    path(
+        'tariffs/<int:tariff_id>/delete/',
+        views.tariff_delete,
+        name='tariff_delete',
+    ),
+    path(
+        'tariffs/<int:tariff_id>/edit/',
+        views.tariff_edit,
+        name='tariff_edit',
+    ),
+    path(
         'tariffs_list/',
         views.tariffs_list,
         name='tariffs_list',
@@ -77,13 +92,38 @@ urlpatterns = [
         name='del_calculation',
     ),
     path(
-        'point_detail/<int:point_id>/',
-        views.add_lower_point,
-        name='add_lower_point',
+        'point_detail/<int:point_id>/calculations/<int:calculation_id>/edit/',
+        views.calculation_edit,
+        name='calculation_edit',
     ),
     path(
-        'point_detail/<int:point_id>/calculations/<int:calculation_id>/download_xlsx_document',
+        'point_detail/<int:point_id>/calculations/<int:calculation_id>/update/',
+        views.calculation_tariff_update,
+        name='calculation_tariff_update',
+    ),
+    path(
+        'point_detail/<int:point_id>/calculations/<int:calculation_id>/download_xlsx_document/',
         views.download_xlsx_document,
         name='download_xlsx_document',
+    ),
+    path(
+        'point_detail/<int:point_id>/interconnections/create/',
+        views.interconnection_create,
+        name='interconnection_create',
+    ),
+    path(
+        'point_detail/<int:point_id>/interconnections/<int:interconnection_id>/delete/',
+        views.interconnection_delete,
+        name='interconnection_delete',
+    ),
+    path(
+        'point_detail/<int:point_id>/document/create/',
+        views.document_add,
+        name='document_add',
+    ),
+    path(
+        'point_detail/<int:point_id>/document/<int:document_id>/delete/',
+        views.document_delete,
+        name='document_delete',
     ),
 ]

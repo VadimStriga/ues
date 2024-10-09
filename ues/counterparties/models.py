@@ -2,7 +2,7 @@ from django.db import models
 
 
 def contract_directory_path(instance, filename):
-    return "contracts/contract_{0}/{1}".format(instance.contract.title, filename)
+    return 'contracts/contract_{0}/{1}'.format(instance.contract.title, filename)
 
 
 class Document(models.Model):

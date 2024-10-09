@@ -34,6 +34,7 @@
             <li><a class="dropdown-item {% if view_name == "accounting:tariffs_list" %}active{% endif %}" href="{% url "accounting:tariffs_list" %}">Тарифы</a></li>
             {% if user.is_authenticated %}
               <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item {% if view_name == "accounting:tariff_create" %}active{% endif %}" href="{% url "accounting:tariff_create" %}">Добавить тариф</a></li>
               <li><a class="dropdown-item" href="#">Внести показания</a></li>
             {% endif %}
           </ul>

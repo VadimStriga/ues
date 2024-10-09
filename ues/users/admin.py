@@ -11,44 +11,48 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = CustomUser
     list_display = (
-        "email",
-        "first_name",
-        "middle_name",
-        "last_name",
-        "post",
-        "birth_date",
-        "photo",
-        "is_staff",
-        "is_active",
+        'email',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'letter_of_attorney',
+        'post',
+        'birth_date',
+        'photo',
+        'is_staff',
+        'is_active',
     )
-    list_filter = ("email", "is_staff", "is_active",)
+    list_filter = ('email', 'is_staff', 'is_active',)
     fieldsets = (
-        (None, {"fields": ("email",
-                           "password",
-                           "first_name",
-                           "middle_name",
-                           "last_name",
-                           "post",
-                           "birth_date",
-                           "photo",)}),
-        ("Разрешения", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
+        (None, {'fields': ('email',
+                           'password',
+                           'first_name',
+                           'middle_name',
+                           'last_name',
+                           'letter_of_attorney',
+                           'post',
+                           'birth_date',
+                           'photo',)}),
+        ('Разрешения', {'fields': ('is_staff', 'is_active', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
         (None, {
-            "classes": ("wide",),
-            "fields": ("email",
-                       "password1",
-                       "password2",
-                       "first_name",
-                       "middle_name",
-                       "last_name",
-                       "post",
-                       "birth_date","is_staff",
-                       "is_active",
-                       "groups",
-                       "user_permissions"
+            'classes': ('wide',),
+            'fields': ('email',
+                       'password1',
+                       'password2',
+                       'first_name',
+                       'middle_name',
+                       'last_name',
+                       'letter_of_attorney',
+                       'post',
+                       'birth_date',
+                       'is_staff',
+                       'is_active',
+                       'groups',
+                       'user_permissions'
             )}
         ),
     )
-    search_fields = ("email",)
-    ordering = ("email",)
+    search_fields = ('email',)
+    ordering = ('email',)

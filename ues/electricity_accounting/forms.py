@@ -2,6 +2,7 @@ from django import forms
 
 from .models import (Calculation,
                      CurrentTransformer,
+                     Document,
                      InterconnectedPoints,
                      ElectricityMeter,
                      ElectricityMeteringPoint,
@@ -9,8 +10,8 @@ from .models import (Calculation,
 
 
 class DateInput(forms.DateInput):
-    input_type = "date"
-    format = "%Y-%m-%d"
+    input_type = 'date'
+    format = '%d.%m.%Y'
 
 
 class BooleanDropdown(forms.widgets.Select):
@@ -38,6 +39,42 @@ class CalculationForm(forms.ModelForm):
         fields = (
             'entry_date',
             'readings',
+        )
+
+
+class CalculationEditForm(forms.ModelForm):
+    entry_date = forms.DateField(
+        label='Дата снятия показаний',
+        required=True,
+        widget=DateInput({'class': 'form-control'}),
+        localize=True,
+    )
+    previous_entry_date = forms.DateField(
+        label='Дата снятия предыдущих показаний',
+        required=True,
+        widget=DateInput({'class': 'form-control'}),
+        localize=True,
+    )
+    class Meta:
+        model = Calculation
+        fields = (
+            'entry_date',
+            'readings',
+            'previous_entry_date',
+            'previous_readings',
+            'difference_readings',
+            'transformation_coefficient',
+            'amount',
+            'deductible_amount',
+            'losses',
+            'constant_losses',
+            'result_amount',
+            'tariff1',
+            'tariff2',
+            'tariff3',
+            'margin',
+            'accrued',
+            'accrued_NDS',
         )
 
 
@@ -69,7 +106,28 @@ class CurrentTransformerForm(forms.ModelForm):
         }
 
 
+class DocumentForm(forms.ModelForm):
+    conclusion_date = forms.DateField(
+        label='Дата заключения договора',
+        required=True,
+        widget=DateInput({'class': 'form-control'}),
+        localize=True,
+    )
+    class Meta:
+        model = Document
+        fields = (
+            'title',
+            'conclusion_date',
+            'file',
+        )
+
+
 class InterconnectedPointsForm(forms.ModelForm):
+    lower_point = forms.ModelChoiceField(
+        label='Нижестоящая точка учёта',
+        queryset=ElectricityMeteringPoint.objects.all(),
+        help_text='Объём потребленной электроэнрегии нижестоящей точки учета вычитается из объёма потреблённой электроэнергии вышестоящей точки учёта.'
+    )
     class Meta:
         model = InterconnectedPoints
         fields = (
@@ -130,7 +188,7 @@ class TariffForm(forms.ModelForm):
         localize=True,
     )
     end_tariff_period = forms.DateField(
-        label='Начало периода действия тарифов',
+        label='Окончание периода действия тарифов',
         required=True,
         widget=DateInput({'class': 'form-control'}),
         localize=True,

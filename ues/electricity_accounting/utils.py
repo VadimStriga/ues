@@ -13,13 +13,19 @@ from .models import (NDS,
                      InterconnectedPoints)
 
 
-def calculation_tariff(point_id):
+def calculation_tariff(point_id, entry_date):
     """The function for determining the cost of the tariff selected at the
     ElectricityMeteringPoint. The VAT amount is deducted from the tariffs for
     urban and rural populations, since it was originally included in the tariffs.
     """
+    tariff_f = Tariff.objects.filter(begin_tariff_period__lte=entry_date,
+                                end_tariff_period__gte=entry_date).first()
+    if tariff_f is not None:
+        tariff = tariff_f
+    else:
+        tariff = Tariff.objects.first()
+
     point = get_object_or_404(ElectricityMeteringPoint, pk=point_id)
-    tariff = Tariff.objects.all()[0]
     if point.tariff == 'urban_tariff':
         tariff1 = tariff.urban_tariff_1 - tariff.urban_tariff_1 * NDS / (100 + NDS)
         tariff2 = tariff.urban_tariff_2 - tariff.urban_tariff_2 * NDS / (100 + NDS)
@@ -268,8 +274,17 @@ def create_xlsx_document(request, point_id, calculation_id):
     worksheet2.write('F18', 'Покупатель ________ ', text)
     worksheet2.write('C19', 'м.п.', text)
     worksheet2.write('G19', 'м.п.', text)
-    worksheet2.write('B21', 'доверенность №', text)
+    worksheet2.write('B21', f'Доверенность №{user.letter_of_attorney}', text)
 
     workbook.close()
     xlsx_data = output.getvalue()
     return xlsx_data
+
+
+def get_previous_readings(point_id):
+    calculation = Calculation.objects.filter(point=point_id).first()
+    if calculation is not None:
+        previous_readings = calculation.readings
+    else:
+        previous_readings = 0
+    return previous_readings

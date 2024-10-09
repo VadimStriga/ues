@@ -14,7 +14,7 @@ NUMBER_OF_CONTRACTS = 25
 def index(request):
     counterparties = Counterparty.objects.all()
     paginator = Paginator(counterparties, NUMBER_OF_COUNTERPARTIES)
-    page_number = request.GET.get("page")
+    page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
         'page_obj': page_obj,
@@ -98,7 +98,7 @@ def contract_edit(request, contract_id):
 def contracts_list(request):
     contracts = Contract.objects.all()
     paginator = Paginator(contracts, NUMBER_OF_CONTRACTS)
-    page_number = request.GET.get("page")
+    page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
         'page_obj': page_obj,

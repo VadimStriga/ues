@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import (Calculation,
                      CurrentTransformer,
+                     Document,
                      ElectricityMeter,
                      ElectricityMeteringPoint,
                      Tariff,
@@ -42,6 +43,16 @@ class CurrentTransformerAdmin(admin.ModelAdmin):
         'installation_date',
         'date_of_next_verification',
         'point',
+    )
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = (
+        'point',
+        'title',
+        'file',
+        'conclusion_date',
     )
 
 

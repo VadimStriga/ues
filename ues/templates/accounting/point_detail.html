@@ -56,6 +56,7 @@
           <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <button class="nav-link" id="nav-devices-tab" data-bs-toggle="tab" data-bs-target="#nav-devices" type="button" role="tab" aria-controls="nav-devices" aria-selected="true">Приборы учета</button>
             <button class="nav-link active" id="nav-indications-tab" data-bs-toggle="tab" data-bs-target="#nav-indications" type="button" role="tab" aria-controls="nav-indications" aria-selected="false">Показания</button>
+            <button class="nav-link" id="nav-interconnection-tab" data-bs-toggle="tab" data-bs-target="#nav-interconnection" type="button" role="tab" aria-controls="nav-interconnection" aria-selected="false">Взаимосвязи</button>
             <button class="nav-link" id="nav-doc-tab" data-bs-toggle="tab" data-bs-target="#nav-doc" type="button" role="tab" aria-controls="nav-doc" aria-selected="false">Документация</button>
             <button class="nav-link" id="nav-comment-tab" data-bs-toggle="tab" data-bs-target="#nav-comment" type="button" role="tab" aria-controls="nav-comment" aria-selected="false">Комментарии</button>
           </div>
@@ -79,8 +80,18 @@
           <div class="tab-pane fade show active" id="nav-indications" role="tabpanel" aria-labelledby="nav-indications-tab">
             {% include "accounting/includes/calculations_list.html" %}
           </div>
+          <div class="tab-pane fade" id="nav-interconnection" role="tabpanel" aria-labelledby="nav-interconnection-tab">
+            {% if user.is_authenticated %}
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <buttomn>
+                  <a class="btn btn-primary me-2" href="{% url 'accounting:interconnection_create' point.id %}"> Добавить взаимосвязь</a>
+                </buttomn>
+              </div>
+            {% endif %}
+            {% include "accounting/includes/interconnection_list.html" %}
+          </div>
           <div class="tab-pane fade" id="nav-doc" role="tabpanel" aria-labelledby="nav-doc-tab">
-            Документы всякие
+            {% include "accounting/includes/point_documents.html" %}
           </div>
           <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab">
             Комментарии

@@ -24,6 +24,9 @@
         <th class="align-middle" scope="col" title="Тариф для сельского населения с однотирфным прибором учета. Для первого диапазона объемов потребления (до 10980 кВт*ч), Для второго диапазона объемов потребления (от 10980 – 14640 кВт*ч) и Для третьего диапазона объемов потребления (свыше 14640 кВт*ч), руб./кВтч">
           Сельское<br>население
         </th>
+        {% if user.is_authenticated %}
+          <th class="align-middle" scope="col"></th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
@@ -57,6 +60,16 @@
             <br>
             {{ tariff.rural_tariff_3 }}
           </td>
+          {% if user.is_authenticated %}
+            <td class="align-middle">
+              <a class="btn btn-link" href="{% url "accounting:tariff_edit" tariff.id %}" title="Редактировать">
+                <img src="{% static "icons/pencil-square.svg " %}" alt="Bootstrap" width="16" height="16">
+              </a>
+              <a class="btn btn-link" onclick="return confirm('Вы уверены что хотите удалить тариф?');" href="{% url 'accounting:tariff_delete' tariff.id %}" title="Удалить">
+                <img src="{% static "icons/trash.svg " %}" alt="Bootstrap" width="16" height="16">
+              </a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
     </tbody>

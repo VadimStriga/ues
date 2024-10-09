@@ -6,36 +6,44 @@ from .managers import CustomUserManager
 
 
 class CustomUser(AbstractUser):
-    """User model."""
+    """User model.
+    It was modified to delete the username field.
+    """
     username = None
-    email = models.EmailField(_("email address"), unique=True)
+    email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(
-        "Имя",
+        'Имя',
         max_length=254,
         blank=False,
     )
     middle_name = models.CharField(
-        "Отчество",
+        'Отчество',
         max_length=254,
         blank=True,
     )
     last_name = models.CharField(
-        "Фамилия",
+        'Фамилия',
         max_length=254,
         blank=False,
     )
+    letter_of_attorney = models.CharField(
+        'Доверенность',
+        max_length=254,
+        blank=True,
+        help_text='Доверенность на право подписания документов от лица организации',
+    )
     post = models.CharField(
-        "Должность",
+        'Должность',
         max_length=254,
         blank=False,
     )
     photo = models.ImageField(
-        "Фотография сотрудника",
-        upload_to="users/photo/",
+        'Фотография сотрудника',
+        upload_to='users/photo/',
         blank=True,
     )
     birth_date = models.DateField(
-        "Дата рождения",
+        'Дата рождения',
         auto_now=False,
         auto_now_add=False,
         null=True,
@@ -43,14 +51,14 @@ class CustomUser(AbstractUser):
     )
 
 
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
     class Meta:
-        verbose_name = ("Сотрудник организации")
-        verbose_name_plural = ("Сотрудники организации")
+        verbose_name = ('Сотрудник организации')
+        verbose_name_plural = ('Сотрудники организации')
 
         def __str__(self):
             return self.email
