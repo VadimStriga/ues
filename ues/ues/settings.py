@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(m^b+uocf*q9%3z7yimt6k2^!l^@r9b97rfpfwf1y#42#3*w#u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'electricity_accounting.apps.ElectricityAccountingConfig',
     'core.apps.CoreConfig',
     'counterparties.apps.CounterpartiesConfig',
+    'organization.apps.OrganizationConfig',
     'users.apps.UsersConfig',
     'debug_toolbar',
     'sorl.thumbnail',
@@ -117,6 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

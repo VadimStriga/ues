@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from counterparties import views as counterparties_views
 
 
 app_name = 'accounting'
@@ -125,5 +126,20 @@ urlpatterns = [
         'point_detail/<int:point_id>/document/<int:document_id>/delete/',
         views.document_delete,
         name='document_delete',
+    ),
+    path(
+        'point_detail/<int:point_id>/comments/create/',
+        counterparties_views.comment_create,
+        name='comment_point_create',
+    ),
+    path(
+        'point_detail/<int:point_id>/comments/<int:comment_id>/delete/',
+        counterparties_views.comment_delete,
+        name='comment_point_delete',
+    ),
+    path(
+        'point_detail/<int:point_id>/comments/<int:comment_id>/edit/',
+        counterparties_views.comment_edit,
+        name='comment_point_edit',
     ),
 ]

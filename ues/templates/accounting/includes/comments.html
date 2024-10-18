@@ -1,0 +1,35 @@
+{% load comments %}
+{% load static %}
+
+
+{% if user.is_authenticated %}
+  {% get_comment_form for point as form %}
+  <form action="{% comment_form_target %}" method="POST">
+    {% csrf_token %}
+    <div class="input-group input-group-lg">
+      <span class="input-group-text" id="inputGroup-sizing-lg" width="100%">
+        <button type="submit" value="Add comment" id="id_submit" class="btn btn-link" title="Сохранить комментарий">
+          <img src="{% static "icons/floppy.svg " %}" alt="Bootstrap" width="16" height="16">
+        </button>
+        {{ form.comment }}
+      </span>
+      
+    </div>
+    {{ form.honeypot }}
+    {{ form.content_type }}
+    {{ form.object_pk }}
+    {{ form.timestamp }}
+    {{ form.security_hash }}
+    <input type="hidden" name="next" value="{% url 'accounting:point_detail' point.id %}" />
+  </form>
+{% endif %}
+{% get_comment_list for point as comment_list %}
+{% for comment in comment_list %}
+  <div class="card">
+    <div class="card-body">
+      <h6 class="card-title">{{ comment.user_name }}, {{ comment.submit_date|date:"d.m.Y H:i"  }}</h6>
+      <p class="card-text">{{ comment.comment }}</p>
+    </div>
+  </div>
+{% endfor %}
+<link rel="stylesheet" href="{% static 'css/honeypot.css' %}">

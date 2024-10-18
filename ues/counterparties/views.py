@@ -1,9 +1,11 @@
 from django.core.paginator import Paginator
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import DocumentForm ,ContractForm, CounterpartyForm
-from .models import Document ,Contract, Counterparty
+from .forms import CommentForm, DocumentForm, ContractForm, CounterpartyForm
+from .models import Comment, Document, Contract, Counterparty
+from .utils import get_redirect_url, get_object_class_and_redirect_url
 from electricity_accounting.models import ElectricityMeteringPoint
 
 
@@ -63,11 +65,15 @@ def contract_delete(request, contract_id):
 
 def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, pk=contract_id)
-    form = DocumentForm
+    comment_form = CommentForm()
+    comments = Comment.objects.filter(contract__pk=contract_id)
+    form = DocumentForm()
     documents = Document.objects.filter(contract=contract_id)
     documents_count = Document.objects.filter(contract=contract_id).count()
     points = ElectricityMeteringPoint.objects.filter(contract=contract_id)
     context = {
+        'comment_form': comment_form,
+        'comments': comments,
         'contract': contract,
         'documents': documents,
         'documents_count': documents_count,
@@ -128,14 +134,18 @@ def counterparty_delete(request, counterparty_id):
 
 def counterparty_detail(request, counterparty_id):
     counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
+    comment_form = CommentForm()
+    comments = Comment.objects.filter(counterparty__pk=counterparty_id)
     contracts = Contract.objects.filter(counterparty=counterparty_id)
     contracts_count = Contract.objects.filter(counterparty=counterparty).count()
     points = ElectricityMeteringPoint.objects.filter(contract__in=contracts)
     context = {
         'counterparty': counterparty,
+        'comments': comments,
         'contracts': contracts,
         'contracts_count': contracts_count,
         'points': points,
+        'comment_form': comment_form,
     }
     return render(request, 'counterparties/counterperty_detail.html', context)
 
@@ -153,3 +163,48 @@ def counterparty_edit(request, counterparty_id):
         'is_edit': True,
     }
     return render(request, 'counterparties/counterparty_create.html', context)
+
+
+@login_required
+def comment_create(request, **id):
+    value = next(iter(id))
+    object_id = id.get(value)
+    object_class, redirect_url = get_object_class_and_redirect_url(value, object_id)
+    content_type = ContentType.objects.get_for_model(object_class)
+    form = CommentForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.content_type = content_type
+        comment.object_id = object_id
+        comment.author = request.user
+        comment.save()
+    return redirect_url
+
+
+@login_required
+def comment_delete(request, **id):
+    comment_id = id['comment_id']
+    comment = get_object_or_404(Comment, pk=comment_id)
+    redirect_url = get_redirect_url(id)
+    if comment.author != request.user:
+        return redirect_url
+    comment.delete()
+    return redirect_url
+
+
+@login_required
+def comment_edit(request, **id):
+    comment_id = id['comment_id']
+    comment = get_object_or_404(Comment, pk=comment_id)
+    redirect_url = get_redirect_url(id)
+    if comment.author != request.user:
+        return redirect_url
+    form = CommentForm(request.POST or None, instance=comment)
+    if form.is_valid():
+        form.save()
+        return redirect_url
+    context = {
+        'form': form,
+        'comment': comment,
+    }
+    return render(request, 'counterparties/comment_edit.html', context)

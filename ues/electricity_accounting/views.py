@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from transliterate import translit
 
-from counterparties.models import Contract
+from counterparties.models import Comment, Contract
+from counterparties.forms import CommentForm
 from .forms import (CalculationForm,
                     CalculationEditForm,
                     CurrentTransformerForm,
@@ -158,8 +159,9 @@ def point_detail(request, point_id):
     point = get_object_or_404(ElectricityMeteringPoint, pk=point_id)
     calculations = Calculation.objects.filter(point=point_id)
     calculation_form = CalculationForm()
+    comment_form = CommentForm()
+    comments = Comment.objects.filter(point__pk=point_id)
     document_form = DocumentForm()
-    print(document_form)
     documents = Document.objects.filter(point=point_id)
     documents_count =  documents.count()
     td = date.today()
@@ -181,6 +183,8 @@ def point_detail(request, point_id):
     context = {
         'point': point,
         'calculations': calculations,
+        'comment_form': comment_form,
+        'comments': comments,
         'documents': documents,
         'documents_count': documents_count,
         'document_form': document_form,

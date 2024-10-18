@@ -1,6 +1,18 @@
 from django.contrib import admin
 
-from .models import Document ,Contract, Counterparty
+from .models import Comment, Document, Contract, Counterparty
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'author',
+        'text',
+        'created',
+        'updated',
+        'content_object',
+    )
 
 
 @admin.register(Document)
@@ -16,6 +28,7 @@ class DocumentAdmin(admin.ModelAdmin):
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
     list_display = (
+        'pk',
         'counterparty',
         'title',
         'conclusion_date',

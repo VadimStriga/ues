@@ -1,11 +1,20 @@
 from django import forms
 
-from .models import Document ,Contract, Counterparty
+from .models import Comment, Document ,Contract, Counterparty
 
 
 class DateInput(forms.DateInput):
     input_type = 'date'
     format = '%Y-%m-%d'
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        widgets = {
+          'text': forms.Textarea(attrs={'rows':3, 'cols':5, 'placeholder':'Введите текст комментария',}),
+        }
+        fields = ('text',)
 
 
 class DocumentForm(forms.ModelForm):

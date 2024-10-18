@@ -11,6 +11,7 @@ from .models import (NDS,
                      ElectricityMeteringPoint,
                      Tariff,
                      InterconnectedPoints)
+from organization.models import Organization
 
 
 def calculation_tariff(point_id, entry_date):
@@ -137,6 +138,7 @@ def create_xlsx_document(request, point_id, calculation_id):
     counterparty_name = counterparty.short_name
     points = ElectricityMeteringPoint.objects.filter(contract=point.contract)
     calculations = Calculation.objects.filter(point__in=points).filter(entry_date__month=month_m)
+    organization = Organization.objects.first()
 
     locale.setlocale(locale.LC_ALL, "")
     month = calculation.entry_date.strftime('%B')
@@ -168,7 +170,7 @@ def create_xlsx_document(request, point_id, calculation_id):
     })
     worksheet1.write('F2', 'РАСЧЕТ', title)
     worksheet1.write('F3', f'потребления электроэнергии за {month} {year} года', title)
-    worksheet1.write('A4', f'Организация:', text)
+    worksheet1.write('A4', f'Организация: {organization.short_name}', text)
     worksheet1.write('A5', f'Кому: {counterparty_name}', text)
     table_header = (
         'Место установки счётчика',
@@ -237,8 +239,8 @@ def create_xlsx_document(request, point_id, calculation_id):
 
 
     worksheet2 = workbook.add_worksheet('Акт')
-    worksheet2.write('A1', 'Исполнитель:', text)
-    worksheet2.write('A2', 'Адрес:', text)
+    worksheet2.write('A1', f'Исполнитель: {organization.short_name} ИНН {organization.tax_identification_number} КПП {organization.registration_reason_code}', text)
+    worksheet2.write('A2', f'Адрес: {organization.address} тел. {organization.phone_number}', text)
     worksheet2.write('F4', 'Акт приёма-передачи №', title)
     worksheet2.write('F5', f'по договору №{point.contract.title} от {conclusion_date}', title)
     worksheet2.write('A7', f'Покупатель: {counterparty_name}', text)

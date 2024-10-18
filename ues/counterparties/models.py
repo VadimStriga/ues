@@ -1,8 +1,47 @@
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+
+
+User = get_user_model()
 
 
 def contract_directory_path(instance, filename):
     return 'contracts/contract_{0}/{1}'.format(instance.contract.title, filename)
+
+
+class Comment(models.Model):
+    """A class model for creating comments on counterparties,
+    contracts and accounting points.
+    """
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Автор комментария',
+    )
+    text = models.TextField('Комментарий')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now_add=True)
+
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+    )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(
+        'content_type',
+        'object_id',
+    )
+
+    class Meta:
+        ordering = ('-created',)
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Коментирии'
+
+    def __str__(self) -> str:
+        return self.text[:20]
 
 
 class Document(models.Model):
@@ -36,6 +75,7 @@ class Document(models.Model):
 
 
 class Contract(models.Model):
+    comment = GenericRelation(Comment, related_query_name='contract')
     counterparty = models.ForeignKey(
         'Counterparty',
         on_delete=models.CASCADE,
@@ -94,6 +134,7 @@ class Contract(models.Model):
 
 
 class Counterparty(models.Model):
+    comment = GenericRelation(Comment, related_query_name='counterparty')
     full_name = models.CharField(
         'Полное наименование',
         max_length=255,

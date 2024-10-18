@@ -1,8 +1,16 @@
 <!-- templates/core/404.html -->
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Custom 404{% endblock %}
+
 {% block content %}
-  <h1>Custom 404</h1>
-  <p>Страницы с адресом {{ path }} не существует</p>
-  <a href="{% url 'posts:index' %}">Идите на главную</a>
+<div class="text-center">
+  <img class="rounded" src="{% static "img/errors/404.png" %}" alt="My image">
+  <p>
+    <h1>Ошибка 404</h1>
+  </p>
+  <p>
+    <h3>Страница не найдена</h3>
+  </p>
+</div>
 {% endblock %}

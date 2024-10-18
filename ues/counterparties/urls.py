@@ -52,13 +52,43 @@ urlpatterns = [
         name='counterparty_detail',
     ),
     path(
-        'counterparties/<int:counterparty_id>/edit',
+        'counterparties/<int:counterparty_id>/edit/',
         views.counterparty_edit,
         name='counterparty_edit',
     ),
     path(
-        'counterparties/<int:counterparty_id>/delete',
+        'counterparties/<int:counterparty_id>/delete/',
         views.counterparty_delete,
         name='counterparty_delete',
+    ),
+    path(
+        'counterparties/counterparty_detail/<int:counterparty_id>/comments/create/',
+        views.comment_create,
+        name='comment_counterparty_create',
+    ),
+    path(
+        'counterparties/counterparty_detail/<int:counterparty_id>/comments/<int:comment_id>/delete/',
+        views.comment_delete,
+        name='comment_counterparty_delete',
+    ),
+    path(
+        'counterparties/counterparty_detail/<int:counterparty_id>/comments/<int:comment_id>/edit/',
+        views.comment_edit,
+        name='comment_counterparty_edit',
+    ),
+    path(
+        'counterparties/contract_detail/<int:contract_id>/comments/create/',
+        views.comment_create,
+        name='comment_contract_create',
+    ),
+    path(
+        'counterparties/contract_detail/<int:contract_id>/comments/<int:comment_id>/delete/',
+        views.comment_delete,
+        name='comment_contract_delete',
+    ),
+    path(
+        'counterparties/contract_detail/<int:contract_id>/comments/<int:comment_id>/edit/',
+        views.comment_edit,
+        name='comment_contract_edit',
     ),
 ]

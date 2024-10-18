@@ -2,5 +2,13 @@
 {% extends "base.html" %}
 {% block title %}Custom 500{% endblock %}
 {% block content %}
-    <h1>Custom 500</h1>
+<div class="text-center">
+    <img class="rounded" src="{% static "img/errors/500.png" %}" alt="My image">
+    <p>
+      <h1>Ошибка 500</h1>
+    </p>
+    <p>
+      <h3>Ошибка сервера</h3>
+    </p>
+  </div>
 {% endblock %}

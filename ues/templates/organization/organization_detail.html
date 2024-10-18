@@ -1,0 +1,62 @@
+<!-- templates/organization/organization_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ organization.short_name }}
+{% endblock title %}
+
+{% load user_filters %}
+
+{% block content %}
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/table_sort.css' %}">
+  <script src="{% static 'js/table_sort.js' %}"></script>
+  <main>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xxl-3 col-xl-12">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              Полное наименование: {{ corganization.full_name }}
+            </li>
+            <li class="list-group-item">
+              Сокращенное наименование: {{ organization.short_name }}
+            </li>
+            <li class="list-group-item">
+              Юридический адрес: {{ organization.address }}
+            </li>
+            <li class="list-group-item">
+              ОГРН: {{ organization.main_state_registration_number }}
+            </li>
+            <li class="list-group-item">
+              ИНН: {{ organization.tax_identification_number }}
+            </li>
+            <li class="list-group-item">
+              КПП: {% if organization.registration_reason_code %}{{ organization.registration_reason_code }}{% endif %}
+            </li>
+            <li class="list-group-item">
+              Контактный телефон: {{ organization.phone_number }}
+            </li>
+            <li class="list-group-item">
+              Электронная почта: {{ organization.email }}
+            </li>
+            <li class="list-group-item">
+              Руководитель организации:
+              {{ organization.job_title }}
+              {{ organization.person_full_name }}
+            </li>
+            <li class="list-group-item"></li>
+          </ul>
+          {% if user.is_authenticated %}
+            {% if organization %}
+              <buttomn>
+                <a class="btn btn-primary" href="{% url "organization:organization_edit" organization.pk %}">Редактировать  организацию</a>
+                <a class="btn btn-danger" onclick="return confirm('Вы уверены что хотите удалить organization?');" href="{% url "organization:organization_delete" organization.pk %}">Удалить организацию</a>
+              </buttomn>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock content %}

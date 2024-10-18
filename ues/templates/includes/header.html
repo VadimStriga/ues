@@ -44,8 +44,8 @@
             Наша организация
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'users:users_list' %}">Наши сотрудники</a></li>
-            <li><a class="dropdown-item" href="#">Реквизиты</a></li>
+            <li><a class="dropdown-item {% if view_name  == 'users:users_list'%}active{% endif %}" href="{% url 'users:users_list' %}">Наши сотрудники</a></li>
+            <li><a class="dropdown-item {% if view_name  == 'organization:organization_detail'%}active{% endif %}" href="{% url 'organization:organization_detail'%}">Реквизиты</a></li>
             <li><a class="dropdown-item" href="#">О нас</a></li>
           </ul>
         </li>

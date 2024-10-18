@@ -1,6 +1,7 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
-from counterparties.models import Contract
+from counterparties.models import Comment, Contract
 
 
 NDS = 20
@@ -61,6 +62,7 @@ class ElectricityMeteringPoint(models.Model):
         ('Mutual settlement accounting', 'Взаиморасчетный учёт'),
         ('Transit accounting', 'Транзитный учёт'),
     ]
+    comment = GenericRelation(Comment, related_query_name='point')
     constant_losses = models.PositiveIntegerField(
         'Постоянныен потери трансформатора, кВтч/месяц'
     )
@@ -362,8 +364,8 @@ class InterconnectedPoints(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Вычет'
-        verbose_name_plural = 'Вычеты'
+        verbose_name = 'Взаимосвязь'
+        verbose_name_plural = 'Взаимосвязи'
         constraints = [
             models.UniqueConstraint(
                 fields=['head_point', 'lower_point'],
