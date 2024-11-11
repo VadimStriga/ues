@@ -9,33 +9,8 @@ from .utils import get_redirect_url, get_object_class_and_redirect_url
 from electricity_accounting.models import ElectricityMeteringPoint
 
 
-NUMBER_OF_COUNTERPARTIES = 25
-NUMBER_OF_CONTRACTS = 25
-
-
-def index(request):
-    counterparties = Counterparty.objects.all()
-    paginator = Paginator(counterparties, NUMBER_OF_COUNTERPARTIES)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    context = {
-        'page_obj': page_obj,
-    }
-    return render(request, 'counterparties/index.html', context)
-
-
-@login_required
-def contract_create(request, counterparty_id):
-    form = ContractForm(request.POST or None)
-    if form.is_valid():
-        contract = form.save(commit=False)
-        contract.counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
-        contract.save()
-        return redirect('counterparties:contract_detail', contract_id=contract.id,)
-    context = {
-        'form': form,
-    }
-    return render(request, 'counterparties/contract_create.html', context)
+NUMBER_OF_OUTPUT_COUNTERPARTIES = 20
+NUMBER_OF_OUTPUT_CONTRACTS = 20
 
 
 @login_required
@@ -57,10 +32,25 @@ def delete_document(request, contract_id, document_id):
 
 
 @login_required
-def contract_delete(request, contract_id):
+def contract_create(request, counterparty_id):
+    form = ContractForm(request.POST or None)
+    if form.is_valid():
+        contract = form.save(commit=False)
+        contract.counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
+        contract.save()
+        return redirect('counterparties:contract_detail', contract_id=contract.id,)
+    context = {
+        'form': form,
+    }
+    return render(request, 'counterparties/contract_create.html', context)
+
+
+@login_required
+def contract_delete(request, counterparty_id, contract_id):
+    counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
     contract = get_object_or_404(Contract, pk=contract_id)
     contract.delete()
-    return redirect('counterparties:index')
+    return redirect('counterparties:counterparty_detail', counterparty_id=counterparty.id)
 
 
 def contract_detail(request, contract_id):
@@ -103,7 +93,7 @@ def contract_edit(request, contract_id):
 
 def contracts_list(request):
     contracts = Contract.objects.all()
-    paginator = Paginator(contracts, NUMBER_OF_CONTRACTS)
+    paginator = Paginator(contracts, NUMBER_OF_OUTPUT_CONTRACTS)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -129,7 +119,7 @@ def counterparty_create(request):
 def counterparty_delete(request, counterparty_id):
     counterparty = get_object_or_404(Counterparty, pk=counterparty_id)
     counterparty.delete()
-    return redirect('counterparties:index')
+    return redirect('counterparties:counterparties_list')
 
 
 def counterparty_detail(request, counterparty_id):
@@ -163,6 +153,17 @@ def counterparty_edit(request, counterparty_id):
         'is_edit': True,
     }
     return render(request, 'counterparties/counterparty_create.html', context)
+
+
+def counterparties_list(request):
+    counterparties = Counterparty.objects.all()
+    paginator = Paginator(counterparties, NUMBER_OF_OUTPUT_COUNTERPARTIES)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'page_obj': page_obj,
+    }
+    return render(request, 'counterparties/counterparties_list.html', context)
 
 
 @login_required

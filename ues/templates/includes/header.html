@@ -4,7 +4,7 @@
 {% with request.resolver_match.view_name as view_name %}
 <nav class="navbar navbar-expand-lg bg-body-tertiary" >
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url "counterparties:index" %}">
+    <a class="navbar-brand" href="{% url "counterparties:counterparties_list" %}">
       <img src="{% static 'img/logo.png' %}" width="82" height="40" class="d-inline-block align-top" alt="" title="Общество с ограниченной ответственностью УЭС">
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -13,11 +13,11 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav nav-underline me-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle {% if view_name  == 'counterparties:index' or view_name  == 'counterparties:contracts_list' or view_name  == 'counterparties:counterparty_create'%}active{% endif %}" href="{% url 'counterparties:index' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle {% if view_name  == 'counterparties:counterparties_list' or view_name  == 'counterparties:contracts_list' or view_name  == 'counterparties:counterparty_create'%}active{% endif %}" href="{% url 'counterparties:counterparties_list' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Контрагенты
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item {% if view_name  == 'counterparties:index' %}active{% endif %}" href="{% url 'counterparties:index' %}">Контрагенты</a></li>
+            <li><a class="dropdown-item {% if view_name  == 'counterparties:counterparties_list' %}active{% endif %}" href="{% url 'counterparties:counterparties_list' %}">Контрагенты</a></li>
             <li><a class="dropdown-item {% if view_name  == 'counterparties:contracts_list' %}active{% endif %}" href="{% url 'counterparties:contracts_list' %}">Договоры</a></li>
             {% if user.is_authenticated %}
               <li><hr class="dropdown-divider"></li>

@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-(m^b+uocf*q9%3z7yimt6k2^!l^@r9b97rfpfwf1y#42#3*w#u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    'testserver',
+]
 
 
 # Application definition
@@ -50,7 +55,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'users.CustomUser'
 
 LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'counterparties:index'
+LOGIN_REDIRECT_URL = 'organization:organization_detail'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -30,7 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('users.urls', namespace='users')),
     path('auth/', include('django.contrib.auth.urls')),
-    path('', include('counterparties.urls', namespace='counterparties')),
+    path('counterparties/', include('counterparties.urls', namespace='counterparties')),
     path('', include('organization.urls', namespace='organization')),
 ]
 

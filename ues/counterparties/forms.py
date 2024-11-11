@@ -5,7 +5,7 @@ from .models import Comment, Document ,Contract, Counterparty
 
 class DateInput(forms.DateInput):
     input_type = 'date'
-    format = '%Y-%m-%d'
+    format = '%d.%m.%Y'
 
 
 class CommentForm(forms.ModelForm):

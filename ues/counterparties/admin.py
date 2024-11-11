@@ -57,4 +57,8 @@ class CounterpartyAdmin(admin.ModelAdmin):
     )
     list_display_links = ('full_name', 'short_name',)
     list_filter = ('full_name',)
-    search_fields = ('full_name', 'short_name', 'main_state_registration_number')
+    search_fields = (
+        'full_name',
+        'short_name',
+        'main_state_registration_number'
+    )
