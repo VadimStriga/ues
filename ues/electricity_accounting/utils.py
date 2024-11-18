@@ -14,7 +14,7 @@ from .models import (NDS,
 from organization.models import Organization
 
 
-def calculation_tariff(point_id, entry_date):
+def get_calculation_tariff(point_id, entry_date):
     """The function for determining the cost of the tariff selected at the
     ElectricityMeteringPoint. The VAT amount is deducted from the tariffs for
     urban and rural populations, since it was originally included in the tariffs.
@@ -74,14 +74,14 @@ def calculation_tariff(point_id, entry_date):
         return (0, 0, 0, is_population,)
 
 
-def calculation_result_amount(amount, deductible_amount, losses, constant_losses):
+def get_calculation_result_amount(amount, deductible_amount, losses, constant_losses):
     intermediate_amount = amount - deductible_amount
     volume_losses = intermediate_amount / 100 * losses
     result_amount = round((intermediate_amount + volume_losses + constant_losses), 2)
     return result_amount
 
 
-def calculation_accrued(result_amount, tariff1, tariff2, tariff3, margin):
+def get_calculation_accrued(result_amount, tariff1, tariff2, tariff3, margin):
     """A function for calculating charges for consumed electricity.
     The formula is derived based on tariffs for rural and urban populations,
     but it is also suitable for other tariffs.
@@ -95,7 +95,7 @@ def calculation_accrued(result_amount, tariff1, tariff2, tariff3, margin):
     return round(accrued, 2)
 
 
-def calculation_previous_entry_date(point_id):
+def get_calculation_previous_entry_date(point_id):
     calculations = Calculation.objects.filter(point=point_id)
     if len(calculations) != 0:
         previous_entry_date = calculations[0].entry_date
@@ -105,7 +105,7 @@ def calculation_previous_entry_date(point_id):
     return previous_entry_date
 
 
-def calculation_previous_readings(point_id, new_readings):
+def get_calculation_previous_readings(point_id, new_readings):
     calculations = Calculation.objects.filter(point=point_id)
     if len(calculations) != 0:
         previous_readings = calculations[0].readings
@@ -129,7 +129,18 @@ def create_xlsx_document(request, point_id, calculation_id):
     all accounting points for the selected month are taken into account.
     """
     user = request.user
-    user_name = user.last_name + ' ' + user.first_name[0] + '.' + user.middle_name[0] + '.'
+
+    if user.first_name:
+        first_name = user.first_name[0] + '.'
+    else:
+        first_name = user.first_name
+
+    if user.middle_name:
+        middle_name = user.middle_name[0] + '.'
+    else:
+        middle_name = user.middle_name
+
+    user_name = user.last_name + ' ' + first_name + middle_name
 
     calculation = get_object_or_404(Calculation, pk=calculation_id)
     month_m = calculation.entry_date.strftime('%m')

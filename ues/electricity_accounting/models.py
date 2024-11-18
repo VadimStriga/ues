@@ -83,7 +83,7 @@ class ElectricityMeteringPoint(models.Model):
         max_length=255,
         blank=True,
     )
-    losses = models.PositiveIntegerField(
+    losses = models.FloatField(
         'Процент потерь на линиях'
     )
     margin = models.FloatField(
@@ -174,7 +174,10 @@ class CurrentTransformer(models.Model):
     """Model for creating current transformers.
     Current transformers are part of electricity metering points.
     """
-    is_active = models.BooleanField()
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Статус',
+    )
     mark = models.CharField(
         'Тип трансформатора тока',
         max_length=255,
@@ -317,7 +320,7 @@ class Calculation(models.Model):
     transformation_coefficient = models.PositiveIntegerField('Коэффициент транформации',)
     amount = models.FloatField('Количество кВтч',)
     deductible_amount = models.FloatField('Вычитаемое количество кВтч',)
-    losses = models.PositiveIntegerField('Процент потерь на линиях')
+    losses = models.FloatField('Процент потерь на линиях')
     constant_losses = models.PositiveIntegerField('Постоянныен потери трансформатора, кВтч/месяц')
     result_amount = models.FloatField('Результат кВтч',)
     tariff1 = models.FloatField(

@@ -80,6 +80,7 @@ class Contract(models.Model):
         'Counterparty',
         on_delete=models.CASCADE,
         related_name='contracts',
+        verbose_name='Контрагент'
     )
     title = models.CharField(
         'Номер договора',

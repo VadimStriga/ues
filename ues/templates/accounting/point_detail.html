@@ -43,9 +43,9 @@
           <li class="list-group-item"><b>Источник питания:</b> {{ point.power_supply }}</li>
           <li class="list-group-item"><b>Тип учёта:</b> {{ point.get_type_of_accounting_display }}</li>
           <li class="list-group-item"><b>Тариф:</b> {{ point.get_tariff_display }}</li>
-          <li class="list-group-item"><b>Наценка:</b> {{ point.margin }}</li>
-          <li class="list-group-item"><b>Потери в линиях:</b> {{ point.losses }}</li>
-          <li class="list-group-item"><b>Постоянные потери в трансформаторе:</b> {{ point.constant_losses }}</li>
+          <li class="list-group-item"><b>Наценка:</b> {{ point.margin }} руб./кВт*ч</li>
+          <li class="list-group-item"><b>Потери в линиях:</b> {{ point.losses }}%</li>
+          <li class="list-group-item"><b>Постоянные потери в трансформаторе:</b> {{ point.constant_losses }} кВт*ч</li>
           <li class="list-group-item"><b>Коэффициент трансформации:</b> {{ point.transformation_coefficient }}</li>
         </ul>
         {% if user.is_authenticated %}

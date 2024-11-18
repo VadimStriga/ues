@@ -1,17 +1,23 @@
 from http import HTTPStatus
+import shutil
+import tempfile
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 
 from counterparties.models import Comment, Contract, Counterparty, Document
 
 
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
+
 User = get_user_model()
 
 
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class CounterpartiesURLTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -46,7 +52,7 @@ class CounterpartiesURLTests(TestCase):
         )
         cls.contract = Contract.objects.create(
             counterparty = cls.counterparty,
-            title = '123P-15Hj',
+            title = 'Test_URL_title',
             conclusion_date = '2001-01-01',
             contract_price = '12345',
             purchase_code = '1234567890',
@@ -76,6 +82,11 @@ class CounterpartiesURLTests(TestCase):
             content_type = ContentType.objects.get_for_model(Counterparty),
             object_id = cls.counterparty.id,
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self):
         self.guest_client = Client()

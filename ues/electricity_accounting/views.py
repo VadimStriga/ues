@@ -26,15 +26,15 @@ from .models import (NDS,
                      Tariff)
 from .utils import (get_deductible_amount,
                     get_previous_readings,
-                    calculation_accrued,
-                    calculation_previous_entry_date,
-                    calculation_previous_readings,
-                    calculation_result_amount,
-                    calculation_tariff,
+                    get_calculation_accrued,
+                    get_calculation_previous_entry_date,
+                    get_calculation_previous_readings,
+                    get_calculation_result_amount,
+                    get_calculation_tariff,
                     create_xlsx_document)
 
 
-NUMBER_OF_POINTS = 25
+NUMBER_OF_OUTPUT_POINTS = 25
 
 
 @login_required
@@ -177,7 +177,7 @@ def point_detail(request, point_id):
     old_meters = ElectricityMeter.objects.filter(point=point_id).filter(is_active=False)
     transformers = CurrentTransformer.objects.filter(point=point_id).filter(is_active=True)
     old_transformers = CurrentTransformer.objects.filter(point=point_id).filter(is_active=False)
-    tariff1, tariff2, tariff3, is_population = calculation_tariff(point_id, td)
+    tariff1, tariff2, tariff3, is_population = get_calculation_tariff(point_id, td)
     interconnected_lower_points = InterconnectedPoints.objects.filter(head_point=point).select_related('lower_point')
     interconnected_head_points = InterconnectedPoints.objects.filter(lower_point=point)
     context = {
@@ -234,7 +234,7 @@ def point_edit(request, point_id):
 
 def points_list(request):
     points = ElectricityMeteringPoint.objects.all()
-    paginator = Paginator(points, NUMBER_OF_POINTS)
+    paginator = Paginator(points, NUMBER_OF_OUTPUT_POINTS)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -245,7 +245,7 @@ def points_list(request):
 
 def tariffs_list(request):
     tariffs = Tariff.objects.all()
-    paginator = Paginator(tariffs, NUMBER_OF_POINTS)
+    paginator = Paginator(tariffs, NUMBER_OF_OUTPUT_POINTS)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -265,6 +265,7 @@ def tariff_create(request):
         'form': form,
     }
     return render(request, 'accounting/tariff_create.html', context)
+
 
 @login_required
 def tariff_delete(request, tariff_id):
@@ -298,22 +299,22 @@ def add_calculation(request, point_id):
             calculation = calculation_form.save(commit=False)
             calculation.point = point
             calculation.meter = ElectricityMeter.objects.filter(point=point_id).filter(is_active=True)[0]
-            calculation.previous_entry_date = calculation_previous_entry_date(point_id)
-            calculation.previous_readings = calculation_previous_readings(point_id, calculation.readings)
+            calculation.previous_entry_date = get_calculation_previous_entry_date(point_id)
+            calculation.previous_readings = get_calculation_previous_readings(point_id, calculation.readings)
             calculation.difference_readings = round((calculation.readings - calculation.previous_readings), 2)
             calculation.transformation_coefficient = point.transformation_coefficient
             calculation.amount = calculation.difference_readings * calculation.transformation_coefficient
             calculation.deductible_amount = get_deductible_amount(point_id, calculation.entry_date)
             calculation.losses = point.losses
             calculation.constant_losses = point.constant_losses
-            calculation.result_amount = calculation_result_amount(calculation.amount,
-                                                                  calculation.deductible_amount,
-                                                                  calculation.losses,
-                                                                  calculation.constant_losses)
+            calculation.result_amount = get_calculation_result_amount(calculation.amount,
+                                                                      calculation.deductible_amount,
+                                                                      calculation.losses,
+                                                                      calculation.constant_losses)
             entry_date = calculation.entry_date
-            calculation.tariff1, calculation.tariff2, calculation.tariff3, is_population = calculation_tariff(point_id, entry_date)
+            calculation.tariff1, calculation.tariff2, calculation.tariff3, is_population = get_calculation_tariff(point_id, entry_date)
             calculation.margin = point.margin
-            calculation.accrued = calculation_accrued(calculation.result_amount,
+            calculation.accrued = get_calculation_accrued(calculation.result_amount,
                                                       calculation.tariff1,
                                                       calculation.tariff2,
                                                       calculation.tariff3,
@@ -349,12 +350,17 @@ def calculation_edit(request, point_id, calculation_id):
 @login_required
 def calculation_tariff_update(request, point_id, calculation_id):
     calculation = get_object_or_404(Calculation, pk=calculation_id)
-    calculation.tariff1, calculation.tariff2, calculation.tariff3, is_population = calculation_tariff(point_id, calculation.entry_date)
-    calculation.accrued = calculation_accrued(calculation.result_amount,
-                                              calculation.tariff1,
-                                              calculation.tariff2,
-                                              calculation.tariff3,
-                                              calculation.margin)
+    calculation.tariff1, calculation.tariff2, calculation.tariff3, is_population = get_calculation_tariff(point_id, calculation.entry_date)
+    calculation.deductible_amount = get_deductible_amount(point_id, calculation.entry_date)
+    calculation.result_amount = get_calculation_result_amount(calculation.amount,
+                                                              calculation.deductible_amount,
+                                                              calculation.losses,
+                                                              calculation.constant_losses)
+    calculation.accrued = get_calculation_accrued(calculation.result_amount,
+                                                  calculation.tariff1,
+                                                  calculation.tariff2,
+                                                  calculation.tariff3,
+                                                  calculation.margin)
     calculation.accrued_NDS = round((calculation.accrued + calculation.accrued * NDS / 100), 2)
     calculation.save()
     return redirect('accounting:point_detail', point_id = point_id)

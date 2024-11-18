@@ -1,14 +1,21 @@
+import shutil
+import tempfile
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from counterparties.models import Comment, Contract, Counterparty, Document
 
 
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
+
 User = get_user_model()
 
 
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class CounterpartiesModelTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -57,6 +64,11 @@ class CounterpartiesModelTest(TestCase):
             content_type = ContentType.objects.get_for_model(Contract),
             object_id = cls.contract.id,
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
 
     def test_models_have_correct_object_names(self):
         """Check that __str__ is working correctly for the models."""

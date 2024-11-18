@@ -53,7 +53,7 @@ class CounterpartyCreateForm(TestCase):
         )
         cls.contract = Contract.objects.create(
             counterparty=cls.counterparty,
-            title='123P-15Hj',
+            title='Test_Forms_contract',
             conclusion_date='2001-01-01',
             contract_price='12345',
             purchase_code='1234567890',
@@ -110,80 +110,87 @@ class CounterpartyCreateForm(TestCase):
             CounterpartyCreateForm.counterparty_comment.author)
         self.guest_client = Client()
 
-    def test_create_and_edit_counterparty(self):
+    def test_edit_counterparty(self):
         """A valid form creates and edits a counterparty."""
         counterparty_count = Counterparty.objects.count()
-        templates_pages_names = [
-            # reverse('counterparties:counterparty_edit',
-            #         kwargs={'counterparty_id': f'{self.counterparty.id}'}),
+        full_name = 'Test_Edit_Company',
+        short_name = 'TEC',
+        address = '000000, Test city',
+        phone_number = '+71234567890',
+        email = 'testedit@email.ru',
+        main_state_registration_number = '1234567890112',
+        tax_identification_number = '1234567891',
+        registration_reason_code = '123456790',
+        job_title = 'Test_Director',
+        person_full_name = 'Test Name',
+        reverse_redirect = reverse(
+            'counterparties:counterparty_detail',
+            kwargs={'counterparty_id': f'{self.counterparty.id}'}
+        )
+        form_data = {
+            'full_name': full_name,
+            'short_name': short_name,
+            'address': address,
+            'phone_number': phone_number,
+            'email': email,
+            'main_state_registration_number': main_state_registration_number,
+            'tax_identification_number': tax_identification_number,
+            'registration_reason_code': registration_reason_code,
+            'job_title': job_title,
+            'person_full_name': person_full_name,
+        }
+        response = self.authorized_client.post(
+            reverse('counterparties:counterparty_edit',
+                    kwargs={'counterparty_id': f'{self.counterparty.id}'}),
+            data=form_data,
+            follow=True
+        )
+        self.assertRedirects(response, reverse_redirect)
+        self.assertEqual(Counterparty.objects.count(), counterparty_count)
+        self.assertTrue(
+            Counterparty.objects.filter(
+                full_name='Test_Edit_Company'
+            ).exists()
+        )
+
+    def test_create_counterparty(self):
+        """A valid form creates a counterparty."""
+        counterparty_count = Counterparty.objects.count()
+        full_name = 'Test_Company',
+        short_name = 'TC',
+        address = '000000, Test city',
+        phone_number = '+71234567890',
+        email = 'test@email.ru',
+        main_state_registration_number = '1234567890112',
+        tax_identification_number = '1234567891',
+        registration_reason_code = '123456790',
+        job_title = 'Test_Director',
+        person_full_name = 'Test Name',
+        reverse_redirect = reverse(
+            'counterparties:counterparty_detail',
+            kwargs={'counterparty_id': '2'}
+        )
+        form_data = {
+            'full_name': full_name,
+            'short_name': short_name,
+            'address': address,
+            'phone_number': phone_number,
+            'email': email,
+            'main_state_registration_number': main_state_registration_number,
+            'tax_identification_number': tax_identification_number,
+            'registration_reason_code': registration_reason_code,
+            'job_title': job_title,
+            'person_full_name': person_full_name,
+        }
+        response = self.authorized_client.post(
             reverse('counterparties:counterparty_create'),
-        ]
-        for reverse_name in templates_pages_names:
-            with self.subTest(reverse_name=reverse_name):
-                if reverse_name == reverse('counterparties:counterparty_create'):
-                    full_name = 'Test_Company',
-                    short_name = 'TC',
-                    address = '000000, Test city',
-                    phone_number = '+71234567890',
-                    email = 'test@email.ru',
-                    main_state_registration_number = '1234567890112',
-                    tax_identification_number = '1234567891',
-                    registration_reason_code = '123456790',
-                    job_title = 'Test_Director',
-                    person_full_name = 'Test Name',
-                    reverse_redirect = reverse(
-                        'counterparties:counterparty_detail',
-                        kwargs={'counterparty_id': '2'}
-                    )
-                    counterparty_count += 1
-                else:
-                    full_name = 'Test_Edit_Company',
-                    short_name = 'TEC',
-                    address = '000000, Test city',
-                    phone_number = '+71234567890',
-                    email = 'testedit@email.ru',
-                    main_state_registration_number = '1234567890112',
-                    tax_identification_number = '1234567891',
-                    registration_reason_code = '123456790',
-                    job_title = 'Test_Director',
-                    person_full_name = 'Test Name',
-                    reverse_redirect = reverse(
-                        'counterparties:counterparty_detail',
-                        kwargs={'counterparty_id': f'{self.counterparty.id}'}
-                    )
-                form_data = {
-                    'full_name': full_name,
-                    'short_name': short_name,
-                    'address': address,
-                    'phone_number': phone_number,
-                    'email': email,
-                    'main_state_registration_number': main_state_registration_number,
-                    'tax_identification_number': tax_identification_number,
-                    'registration_reason_code': registration_reason_code,
-                    'job_title': job_title,
-                    'person_full_name': person_full_name,
-                }
-                response = self.authorized_client.post(
-                    reverse_name,
-                    data=form_data,
-                    follow=True
-                )
-                # I do not understand why during the test, the redirect_chain
-                # is lost for reverse_name, which is in second place in
-                # tempaltes_pages_names.
-                self.assertRedirects(response, reverse_redirect)
-                self.assertEqual(Counterparty.objects.count(),
-                                 counterparty_count)
-                if reverse_name == reverse('counterparties:counterparty_create'):
-                    self.assertTrue(
-                        Counterparty.objects.filter(full_name='Test_Company'
-                                                    ).exists()
-                    )
-                else:
-                    self.assertTrue(
-                        Counterparty.objects.filter(full_name='Test_Edit_Company'
-                                                    ).exists()
-                    )
+            data=form_data,
+            follow=True
+        )
+        self.assertRedirects(response, reverse_redirect)
+        self.assertEqual(Counterparty.objects.count(), counterparty_count + 1)
+        self.assertTrue(Counterparty.objects.filter(full_name='Test_Company').exists())
+
 
     def test_create_and_edit_contract(self):
         """A valid form creates and edits a contract."""
