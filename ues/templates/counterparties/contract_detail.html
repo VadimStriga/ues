@@ -15,7 +15,7 @@
       <div class="col-xxl-3 col-xl-12">
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            Договор №{{ contract.title }}
+            {{ contract.get_agreement_type_display }} №{{ contract.title }}
           </li>
           <li class="list-group-item">
             <a href="{% url 'counterparties:counterparty_detail' contract.counterparty.id %}">

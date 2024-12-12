@@ -23,7 +23,7 @@
           </li>
           <li class="list-group-item">
             <a href="{% url 'counterparties:contract_detail' point.contract.id %}">
-              Договор №{{ point.contract.title }}
+              {{ point.contract.get_agreement_type_display }} №{{ point.contract.title }}
             </a>
           </li>
           <li class="list-group-item">

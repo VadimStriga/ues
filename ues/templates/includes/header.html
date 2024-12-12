@@ -26,27 +26,27 @@
           </ul>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle {% if view_name  == 'accounting:points_list' or view_name  == 'accounting:tariffs_list' or view_name  == 'accounting:cumulative_statement_of_electricity_consumption' %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Учёт электроэнергии
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item {% if view_name == "accounting:points_list" %}active{% endif %}" href="{% url "accounting:points_list" %}">Точки учета</a></li>
             <li><a class="dropdown-item {% if view_name == "accounting:tariffs_list" %}active{% endif %}" href="{% url "accounting:tariffs_list" %}">Тарифы</a></li>
+            <li><a class="dropdown-item {% if view_name == "accounting:cumulative_statement_of_electricity_consumption" %}active{% endif %}" href="{% url 'accounting:cumulative_statement_of_electricity_consumption' year %}">Статистика</a></li>
             {% if user.is_authenticated %}
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item {% if view_name == "accounting:tariff_create" %}active{% endif %}" href="{% url "accounting:tariff_create" %}">Добавить тариф</a></li>
-              <li><a class="dropdown-item" href="#">Внести показания</a></li>
             {% endif %}
           </ul>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle {% if view_name  == 'users:users_list'%}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle {% if view_name  == 'users:users_list' or view_name  == 'organization:organization_detail' %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Наша организация
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item {% if view_name  == 'users:users_list'%}active{% endif %}" href="{% url 'users:users_list' %}">Наши сотрудники</a></li>
             <li><a class="dropdown-item {% if view_name  == 'organization:organization_detail'%}active{% endif %}" href="{% url 'organization:organization_detail'%}">Реквизиты</a></li>
-            <li><a class="dropdown-item" href="#">О нас</a></li>
+            <li><a class="dropdown-item" href="{% url 'organization:about_organization'%}">О нас</a></li>
           </ul>
         </li>
       </ul>

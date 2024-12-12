@@ -142,4 +142,14 @@ urlpatterns = [
         counterparties_views.comment_edit,
         name='comment_point_edit',
     ),
+    path(
+        'static/<int:year>/',
+        views.cumulative_statement_of_electricity_consumption,
+        name='cumulative_statement_of_electricity_consumption',
+    ),
+    path(
+        'static/<int:year>/download_xlsx_document_yearly_consumptions/',
+        views.download_xlsx_document_yearly_consumptions,
+        name='download_xlsx_document_yearly_consumptions',
+    ),
 ]

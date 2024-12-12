@@ -26,4 +26,9 @@ urlpatterns = [
         views.organization_detail,
         name='organization_detail',
     ),
+    path(
+        '',
+        views.IndexView.as_view(),
+        name='about_organization',
+    ),
 ]

@@ -31,7 +31,9 @@ from .utils import (get_deductible_amount,
                     get_calculation_previous_readings,
                     get_calculation_result_amount,
                     get_calculation_tariff,
-                    create_xlsx_document)
+                    get_cumulative_statement_of_electricity_consumption,
+                    create_xlsx_document,
+                    create_xlsx_document_yearly_consumptions)
 
 
 NUMBER_OF_OUTPUT_POINTS = 25
@@ -400,5 +402,29 @@ def download_xlsx_document(request, point_id, calculation_id):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = f'attachment; filename={filename}'
     xlsx_data = create_xlsx_document(request, point_id, calculation_id)
+    response.write(xlsx_data)
+    return response
+
+
+def cumulative_statement_of_electricity_consumption(request, year):
+    cumulative_statement = get_cumulative_statement_of_electricity_consumption(year)
+    context = {
+        'year': year,
+        'years': cumulative_statement['years'],
+        'yearly_consumptions': cumulative_statement['yearly_consumptions'],
+        'monthly_amounts': cumulative_statement['monthly_amounts'],
+        'yearly_amount': cumulative_statement['yearly_amount'],
+        'yearly_monye_consumptions': cumulative_statement['yearly_monye_consumptions'],
+        'monthly_monye_amounts': cumulative_statement['monthly_monye_amounts'],
+        'yearly_monye_amount': cumulative_statement['yearly_monye_amount'],
+    }
+    return render(request, 'accounting/yearly_consumptions.html', context)
+
+
+def download_xlsx_document_yearly_consumptions(request, year):
+    filename = f'Nakopitelnaya vedomost za {year}.xlsx'
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    xlsx_data = create_xlsx_document_yearly_consumptions(year)
     response.write(xlsx_data)
     return response

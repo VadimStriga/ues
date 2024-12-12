@@ -1,6 +1,8 @@
+from datetime import date
 import io
 import locale
 
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from number_to_string import get_string_by_number
 import xlsxwriter
@@ -11,6 +13,7 @@ from .models import (NDS,
                      ElectricityMeteringPoint,
                      Tariff,
                      InterconnectedPoints)
+from counterparties.models import Counterparty
 from organization.models import Organization
 
 
@@ -78,7 +81,7 @@ def get_calculation_result_amount(amount, deductible_amount, losses, constant_lo
     intermediate_amount = amount - deductible_amount
     volume_losses = intermediate_amount / 100 * losses
     result_amount = round((intermediate_amount + volume_losses + constant_losses), 2)
-    return result_amount
+    return round(result_amount)
 
 
 def get_calculation_accrued(result_amount, tariff1, tariff2, tariff3, margin):
@@ -168,11 +171,11 @@ def create_xlsx_document(request, point_id, calculation_id):
     })
     text = workbook.add_format({
         'font_name':'Times New Roman',
-        'font_size':13,
+        'font_size':12,
     })
     th = workbook.add_format({
         'font_name':'Times New Roman',
-        'font_size':13,
+        'font_size':12,
         'top':6,
         'bottom':6,
         "text_wrap": True,
@@ -189,9 +192,9 @@ def create_xlsx_document(request, point_id, calculation_id):
         'Новые показания',
         'Предыдущие показания',
         'Разность',
-        'Коэффициент трансформации',
+        'Коэф. тр-рмации',
         'Количество кВт*ч',
-        'Вычет кВт*ч',
+        'Вычет, кВт*ч',
         'Потери в линии, %',
         'Постоянные потери, кВт*ч',
         'Результат кВт*ч',
@@ -202,9 +205,18 @@ def create_xlsx_document(request, point_id, calculation_id):
     col = 0
     for item in table_header:
         worksheet1.write(row, col, item, th)
-        worksheet1.set_column(row, col, width=12)
         col +=1
-    
+    worksheet1.set_column(0, 0, width=20)
+    worksheet1.set_column(1, 2, width=12)
+    worksheet1.set_column(3, 3, width=13)
+    worksheet1.set_column(4, 4, width=10)
+    worksheet1.set_column(5, 5, width=9)
+    worksheet1.set_column(6, 6, width=12)
+    worksheet1.set_column(8, 8, width=11)
+    worksheet1.set_column(9, 9, width=12)
+    worksheet1.set_column(10, 10, width=10)
+    worksheet1.set_column(11, 12, width=11)
+
     sum_accrued = 0
     sum_accrued_nds = 0
     for calculation in calculations:
@@ -248,12 +260,16 @@ def create_xlsx_document(request, point_id, calculation_id):
     worksheet1.write(row+4, 6, f'{user.post}', text)
     worksheet1.write(row+4, 10, f'{user_name}', text)
 
+    if point.contract.agreement_type == 'Dogovor':
+        agreement = 'договору'
+    else:
+        agreement = 'контракту'
 
     worksheet2 = workbook.add_worksheet('Акт')
     worksheet2.write('A1', f'Исполнитель: {organization.short_name} ИНН {organization.tax_identification_number} КПП {organization.registration_reason_code}', text)
     worksheet2.write('A2', f'Адрес: {organization.address} тел. {organization.phone_number}', text)
     worksheet2.write('F4', 'Акт приёма-передачи №', title)
-    worksheet2.write('F5', f'по договору №{point.contract.title} от {conclusion_date}', title)
+    worksheet2.write('F5', f'по {agreement} №{point.contract.title} от {conclusion_date}', title)
     worksheet2.write('A7', f'Покупатель: {counterparty_name}', text)
     table_header2 = (
         'Наименование услуг, товара',
@@ -274,7 +290,10 @@ def create_xlsx_document(request, point_id, calculation_id):
     worksheet2.set_column(0, 0, width=25)
     worksheet2.write('A10', 'Эл/энергия (нерег.цены)', text)
     worksheet2.write('B10', 'кВт*ч', text)
-    worksheet2.write('C10', '=Расчет!{0}{1}'.format('G', row+1), text)
+    if len(calculations) > 1:
+        worksheet2.write('C10', '=Расчет!{0}{1}'.format('G', row+1), text)
+    else:
+        worksheet2.write('C10', '=Расчет!{0}{1}'.format('G', row-1), text)
     worksheet2.write('D10', f'{calculation.tariff1}', text)
     worksheet2.write('E10', '=Расчет!{0}{1}'.format('L', row+1), text)
     worksheet2.write('F10', f'{NDS}', text)
@@ -301,3 +320,201 @@ def get_previous_readings(point_id):
     else:
         previous_readings = 0
     return previous_readings
+
+
+def get_cumulative_statement_of_electricity_consumption(year):
+    earlist_calculation = Calculation.objects.earliest('entry_date')
+    years = [i for i in range(int(date.today().strftime('%Y')), int(earlist_calculation.entry_date.strftime('%Y')) - 1, -1)]
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    yearly_consumptions = []
+    yearly_monye_consumptions = []
+    amounts = [0] * 12
+    monye_amounts = [0] * 12
+    for counterparty in Counterparty.objects.all().prefetch_related("contracts__points__calculations"):
+        for contract in counterparty.contracts.all().filter((Q(сompletion_date=None) | Q(сompletion_date__year=year)) & Q(conclusion_date__year__lte=year)):
+            result_amounts = [0] * 12
+            result_monye_amounts = [0] * 12
+            for point in contract.points.all():
+                for calculation in point.calculations.all().filter(entry_date__year=year):
+                    result_amounts[int(calculation.entry_date.strftime('%m')) - 1] += int(calculation.result_amount)
+                    result_monye_amounts[int(calculation.entry_date.strftime('%m')) - 1] += calculation.accrued_NDS
+            amounts = [x+y for x, y in zip(amounts, result_amounts)]
+            yearly_consumption = dict(zip(months, result_amounts))
+            yearly_consumption['sum'] = sum(result_amounts)
+            yearly_consumption['counterparty'] = counterparty
+            yearly_consumption['contract'] = contract
+            yearly_consumptions.append(yearly_consumption)
+            monye_amounts = [round((x + y), 2) for x, y in zip(monye_amounts, result_monye_amounts)]
+            yearly_monye_consumption = dict(zip(months, result_monye_amounts))
+            yearly_monye_consumption['sum'] = sum(result_monye_amounts)
+            yearly_monye_consumption['counterparty'] = counterparty
+            yearly_monye_consumption['contract'] = contract
+            yearly_monye_consumptions.append(yearly_monye_consumption)
+    monthly_amounts = dict(zip(months, amounts))
+    yearly_amount = sum(amounts)
+    monthly_monye_amounts = dict(zip(months, monye_amounts))
+    yearly_monye_amount = round(sum(monye_amounts), 2)
+    cumulative_statement = {
+        'years': years,
+        'yearly_consumptions': yearly_consumptions,
+        'monthly_amounts': monthly_amounts,
+        'yearly_amount': yearly_amount,
+        'yearly_monye_consumptions': yearly_monye_consumptions,
+        'monthly_monye_amounts': monthly_monye_amounts,
+        'yearly_monye_amount': yearly_monye_amount,
+    }
+    return cumulative_statement
+
+
+def create_xlsx_document_yearly_consumptions(year):
+    cumulative_statement = get_cumulative_statement_of_electricity_consumption(year)
+    yearly_consumptions = cumulative_statement['yearly_consumptions']
+    yearly_monye_consumptions = cumulative_statement['yearly_monye_consumptions']
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    title = workbook.add_format({
+        'font_name':'Times New Roman',
+        'font_size':13,
+        'bold': True,
+        'align': 'center',
+        'valign': 'vcenter'
+    })
+    text = workbook.add_format({
+        'font_name':'Times New Roman',
+        'font_size':13,
+    })
+    th = workbook.add_format({
+        'font_name':'Times New Roman',
+        'font_size':13,
+        'top':6,
+        'bottom':6,
+        "text_wrap": True,
+        'align': 'center',
+        'valign': 'vcenter'
+    })
+    table_header = (
+        'Наименование контрагента',
+        'Номер договора',
+        'Январь',
+        'Февраль',
+        'Март',
+        'Апрель',
+        'Май',
+        'Июнь',
+        'Июль',
+        'Август',
+        'Сентябрь',
+        'Октябрь',
+        'Ноябрь',
+        'Декабрь',
+        'Всего за период',
+    )
+    columns = ['C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
+
+    worksheet1 = workbook.add_worksheet('кВт-ч')
+    worksheet1.write('F2', 'Накопительная ведомость', title)
+    worksheet1.write('F3', f'потребления электроэнергии за {year} год', title)
+    worksheet1.write('F4', f'по всем организациям', title)
+    row1 = 5
+    col1 = 0
+    for item in table_header:
+        worksheet1.write(row1, col1, item, th)
+        worksheet1.set_column(row1, col1, width=12)
+        col1 +=1
+    for yearly_consumption in yearly_consumptions:
+        row1 += 1
+        col1 = 0
+        info = (
+            yearly_consumption['counterparty'].short_name,
+            yearly_consumption['contract'].title,
+            yearly_consumption['January'],
+            yearly_consumption['February'],
+            yearly_consumption['March'],
+            yearly_consumption['April'],
+            yearly_consumption['May'],
+            yearly_consumption['June'],
+            yearly_consumption['July'],
+            yearly_consumption['August'],
+            yearly_consumption['September'],
+            yearly_consumption['October'],
+            yearly_consumption['November'],
+            yearly_consumption['December'],
+        )
+        for item in info:
+            worksheet1.write(row1, col1, item, text)
+            col1 +=1
+        worksheet1.write_formula(
+            row1,
+            col1,
+            '=SUM({0}{1}:{2}{1})'.format('C', row1 + 1, 'N'),
+            text
+        )
+    row1 += 1
+    worksheet1.write(row1, 1, 'ВСЕГО:', text)
+    for column in columns:
+        worksheet1.write_formula(
+            row1,
+            columns.index(column) + 2,
+            '=SUM({0}{1}:{0}{2})'.format(
+                column,
+                row1 - len(yearly_consumptions) + 1,
+                row1
+            ),
+            text
+        )
+    
+    worksheet2 = workbook.add_worksheet('Рубли')
+    worksheet2.write('F2', 'Накопительная ведомость стоимости', title)
+    worksheet2.write('F3', f'потребления электроэнергии за {year} год', title)
+    worksheet2.write('F4', f'по всем организациям', title)
+    row2 = 5
+    col2 = 0
+    for item in table_header:
+        worksheet2.write(row2, col2, item, th)
+        worksheet2.set_column(row2, col2, width=12)
+        col2 +=1
+    for yearly_monye_consumption in yearly_monye_consumptions:
+        row2 += 1
+        col2 = 0
+        info = (
+            yearly_monye_consumption['counterparty'].short_name,
+            yearly_monye_consumption['contract'].title,
+            yearly_monye_consumption['January'],
+            yearly_monye_consumption['February'],
+            yearly_monye_consumption['March'],
+            yearly_monye_consumption['April'],
+            yearly_monye_consumption['May'],
+            yearly_monye_consumption['June'],
+            yearly_monye_consumption['July'],
+            yearly_monye_consumption['August'],
+            yearly_monye_consumption['September'],
+            yearly_monye_consumption['October'],
+            yearly_monye_consumption['November'],
+            yearly_monye_consumption['December'],
+        )
+        for item in info:
+            worksheet2.write(row2, col2, item, text)
+            col2 +=1
+        worksheet2.write_formula(
+            row2,
+            col2,
+            '=SUM({0}{1}:{2}{1})'.format('C', row2 + 1, 'N'),
+            text
+        )
+    row2 += 1
+    worksheet2.write(row2, 1, 'ВСЕГО:', text)
+    for column in columns:
+        worksheet2.write_formula(
+            row2,
+            columns.index(column) + 2,
+            '=SUM({0}{1}:{0}{2})'.format(
+                column,
+                row2 - len(yearly_monye_consumptions) + 1,
+                row2
+            ),
+            text
+        )
+
+    workbook.close()
+    xlsx_data = output.getvalue()
+    return xlsx_data

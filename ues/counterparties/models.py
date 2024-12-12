@@ -75,6 +75,17 @@ class Document(models.Model):
 
 
 class Contract(models.Model):
+    AGREEMENT_TYPE_CHOICES = [
+        ('Contract', 'Контракт'),
+        ('Dogovor', 'Договор'),
+    ]
+    agreement_type = models.CharField(
+        'Тип соглашения',
+        choices=AGREEMENT_TYPE_CHOICES,
+        default='Dogovor',
+        help_text='Выбирите тип соглашения из предложенных вариантов.',
+        max_length=255,
+    )
     comment = GenericRelation(Comment, related_query_name='contract')
     counterparty = models.ForeignKey(
         'Counterparty',

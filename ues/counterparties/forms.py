@@ -50,6 +50,7 @@ class ContractForm(forms.ModelForm):
     class Meta:
         model = Contract
         fields = (
+            'agreement_type',
             'title',
             'conclusion_date',
             'contract_price',

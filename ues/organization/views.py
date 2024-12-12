@@ -1,8 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic.base import TemplateView
 
 from .forms import OrganizationForm
 from .models import Organization
+
+
+class IndexView(TemplateView):
+    template_name = 'organization/about_organization.html'
 
 
 @login_required
@@ -39,7 +44,7 @@ def organization_edit(request, organization_id):
     form = OrganizationForm(request.POST or None, instance=organization)
     if form.is_valid():
         organization.save()
-        return redirect('organization:organization_detail', organization_id=organization.id)
+        return redirect('organization:organization_detail')
     context = {
         'form': form,
         'organization': organization,

@@ -60,17 +60,15 @@
               <button class="nav-link active" id="nav-docs-tab" data-bs-toggle="tab" data-bs-target="#nav-docs" type="button" role="tab" aria-controls="nav-docs" aria-selected="true">Договоры</button>
               <button class="nav-link" id="nav-point-tab" data-bs-toggle="tab" data-bs-target="#nav-point" type="button" role="tab" aria-controls="nav-point" aria-selected="false">Точки учета</button>
               <button class="nav-link" id="nav-comment-tab" data-bs-toggle="tab" data-bs-target="#nav-comment" type="button" role="tab" aria-controls="nav-comment" aria-selected="false">Комментарии</button>
+              {% if user.is_authenticated %}
+                <buttomn>
+                  <a class="btn btn-primary me-2" href="{% url "counterparties:contract_create" counterparty.pk %}"> Добавить договор</a>
+                </buttomn>
+              {% endif %}
             </div>
           </nav>
           <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-docs" role="tabpanel" aria-labelledby="nav-docs-tab">
-              {% if user.is_authenticated %}
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                  <buttomn>
-                    <a class="btn btn-primary me-2" href="{% url "counterparties:contract_create" counterparty.pk %}"> Добавить договор</a>
-                  </buttomn>
-                </div>
-              {% endif %}
               {% if contracts %}
                 <table class="table caption-top table-striped table-hover table_sort">
                   <caption>Всего договоров: {{ contracts_count }}</caption>
