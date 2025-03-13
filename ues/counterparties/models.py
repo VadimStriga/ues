@@ -3,6 +3,10 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
+from .validators import (validate_registration_number,
+                         validate_registration_reason_code, 
+                         validate_tax_identification_number)
+
 
 User = get_user_model()
 
@@ -175,7 +179,8 @@ class Counterparty(models.Model):
         help_text='''ОГРН - основной государственный регистрационный номер.
                      ОГРН состоит из 13 арабских цифр.
                      ОГРН индивидуального предпринимателя (ОГРНИП) состоит
-                     из 15 арабских цифр.'''
+                     из 15 арабских цифр.''',
+        validators=[validate_registration_number],
     )
     tax_identification_number = models.PositiveBigIntegerField(
         'ИНН',
@@ -183,7 +188,8 @@ class Counterparty(models.Model):
         unique=True,
         help_text='''ИНН — идентификационный номер налогоплательщика. 
                      ИНН физического лица состоит из 12 арабских цифр. 
-                     ИНН юридического лица состоит из 10 арабских цифр.'''
+                     ИНН юридического лица состоит из 10 арабских цифр.''',
+        validators=[validate_tax_identification_number],
     )
     registration_reason_code = models.PositiveIntegerField(
         'КПП',
@@ -193,7 +199,8 @@ class Counterparty(models.Model):
         help_text='''КПП - код причины постановки на учёт.
                      КПП юридического лица состоит из 9 арабских цифр.
                      Индивидуальные предприниматели не имеют КПП
-                     (приказ ФНС №ММВ-7-6/435).'''
+                     (приказ ФНС №ММВ-7-6/435).''',
+        validators=[validate_registration_reason_code],
     )
     job_title = models.CharField(
         'Должность руководителя',

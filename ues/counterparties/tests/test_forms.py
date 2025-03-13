@@ -191,7 +191,6 @@ class CounterpartyCreateForm(TestCase):
         self.assertEqual(Counterparty.objects.count(), counterparty_count + 1)
         self.assertTrue(Counterparty.objects.filter(full_name='Test_Company').exists())
 
-
     def test_create_and_edit_contract(self):
         """A valid form creates and edits a contract."""
         contract_count = Contract.objects.count()
@@ -207,6 +206,7 @@ class CounterpartyCreateForm(TestCase):
                     'counterparties:contract_create',
                     kwargs={'counterparty_id': f'{self.counterparty.id}'}
                 ):
+                    agreement_type = 'Contract'
                     title = 'Test_create_title'
                     conclusion_date = '2001-01-01'
                     contract_price = '1000000'
@@ -220,6 +220,7 @@ class CounterpartyCreateForm(TestCase):
                     )
                     contract_count += 1
                 else:
+                    agreement_type = 'Contract'
                     title = 'Test_edit_title'
                     conclusion_date = '2001-01-01'
                     contract_price = '1000000'
@@ -232,6 +233,7 @@ class CounterpartyCreateForm(TestCase):
                         kwargs={'contract_id': f'{self.contract.id}'},
                     )
                 form_data = {
+                    'agreement_type': agreement_type,
                     'title': title,
                     'conclusion_date': conclusion_date,
                     'contract_price': contract_price,
