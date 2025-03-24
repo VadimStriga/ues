@@ -106,6 +106,18 @@ class ElectricityAccountingCreateForm(TestCase):
             transformation_coefficient = 1,
             type_of_accounting = 'Calculation accounting',
         )
+        cls.lower_point = ElectricityMeteringPoint.objects.create(
+            constant_losses = 0,
+            contract = cls.contract,
+            name = 'lower_electricity_metering_point',
+            location = 'location',
+            losses = 0,
+            margin = 0,
+            power_supply = 'power_supply',
+            tariff = 'tariff-free',
+            transformation_coefficient = 1,
+            type_of_accounting = 'Calculation accounting',
+        )
         cls.point_comment = Comment.objects.create(
             author = cls.user,
             text = 'Long point comment for testing',
@@ -234,3 +246,237 @@ class ElectricityAccountingCreateForm(TestCase):
                     self.assertTrue(ElectricityMeteringPoint.objects.filter(name='new_electricity_metering_point_name').exists())
                 else:
                     self.assertTrue(ElectricityMeteringPoint.objects.filter(name='edit_electricity_metering_point_name').exists())
+
+    def test_create_and_edit_electricity_meter(self):
+        """A valid form creates and edits a electricity meter."""
+        meter_count = ElectricityMeter.objects.count()
+        templates_pages_names = [
+            reverse('accounting:meter_create', kwargs={'point_id': f'{self.point.id}'}),
+            reverse('accounting:meter_edit', kwargs={'point_id': f'{self.point.id}', 'meter_id': f'{self.meter.id}'}),
+        ]
+        is_active = True
+        mark = 'Energy'
+        installation_date = '2001-01-01'
+        date_of_next_verification = '2017-01-01'
+        for reverse_name in templates_pages_names:
+            with self.subTest(reverse_name=reverse_name):
+                if reverse_name == reverse('accounting:meter_create', kwargs={'point_id': f'{self.point.id}'}):
+                    number = '2'
+                    reverse_redirect = reverse('accounting:point_detail', kwargs={'point_id': f'{self.point.id}'})
+                    meter_count += 1
+                else:
+                    number = '1'
+                    reverse_redirect = reverse('accounting:point_detail', kwargs={'point_id': f'{self.point.id}'})
+                form_data = {
+                    'is_active': is_active,
+                    'number': number,
+                    'mark': mark,
+                    'installation_date': installation_date,
+                    'date_of_next_verification': date_of_next_verification,
+                }
+                response = self.authorized_client.post(reverse_name,
+                                                       data=form_data,
+                                                       follow=True,)
+                self.assertRedirects(response, reverse_redirect)
+                self.assertEqual(ElectricityMeter.objects.count(), meter_count)
+                if reverse_name == reverse('accounting:meter_create', kwargs={'point_id': f'{self.point.id}'}):
+                    self.assertTrue(ElectricityMeter.objects.filter(number = '2').exists())
+                else:
+                    self.assertTrue(ElectricityMeter.objects.filter(number = '1').exists())
+
+    def test_create_and_edit_current_transformer(self):
+        """A valid form creates and edits a current transformer."""
+        transformer_count = CurrentTransformer.objects.count()
+        templates_pages_names = [
+            reverse('accounting:transformer_create', kwargs={'point_id': f'{self.point.id}'}),
+            reverse('accounting:transformer_edit', kwargs={'point_id': f'{self.point.id}', 'transformer_id': f'{self.transformer.id}'}),
+        ]
+        is_active = True
+        mark = 'TT'
+        installation_date = '2001-01-01'
+        date_of_next_verification = '2017-01-01'
+        for reverse_name in templates_pages_names:
+            with self.subTest(reverse_name=reverse_name):
+                if reverse_name == reverse('accounting:transformer_create', kwargs={'point_id': f'{self.point.id}'}):
+                    number = '2'
+                    reverse_redirect = reverse('accounting:point_detail', kwargs={'point_id': f'{self.point.id}'})
+                    transformer_count += 1
+                else:
+                    number = '3'
+                    reverse_redirect = reverse('accounting:point_detail', kwargs={'point_id': f'{self.point.id}'})
+                form_data = {
+                    'is_active': is_active,
+                    'number': number,
+                    'mark': mark,
+                    'installation_date': installation_date,
+                    'date_of_next_verification': date_of_next_verification,
+                }
+                response = self.authorized_client.post(reverse_name,
+                                                       data=form_data,
+                                                       follow=True,)
+                self.assertRedirects(response, reverse_redirect)
+                self.assertEqual(CurrentTransformer.objects.count(), transformer_count)
+                if reverse_name == reverse('accounting:transformer_create', kwargs={'point_id': f'{self.point.id}'}):
+                    self.assertTrue(CurrentTransformer.objects.filter(number = '2').exists())
+                else:
+                    self.assertTrue(CurrentTransformer.objects.filter(number = '3').exists())
+
+    def test_create_and_edit_tariff(self):
+        """A valid form creates and edit a tariff."""
+        tariff_count = Tariff.objects.count()
+        templates_pages_names = [
+            reverse('accounting:tariff_create'),
+            reverse('accounting:tariff_edit', kwargs={'tariff_id': f'{self.tariff.id}'}),
+        ]
+        reverse_redirect = reverse('accounting:tariffs_list')
+        pub_date = '2001-02-01'
+        begin_tariff_period = '2001-02-01'
+        end_tariff_period = '2001-02-01'
+        urban_tariff_1 = 3.5
+        urban_tariff_2 = 4.0
+        urban_tariff_3 = 5.0
+        rural_tariff_1 = 2.5
+        rural_tariff_2 = 3.6
+        rural_tariff_3 = 4.2
+        medium_voltage_tariff_1 = 5.5
+        medium_voltage_tariff_2 = 5.8
+        low_voltage_tariff = 7.0
+        for reverse_name in templates_pages_names:
+            with self.subTest(reverse_name=reverse_name):
+                if reverse_name == reverse('accounting:tariff_create'):
+                    high_voltage_tariff = 5.2
+                    tariff_count += 1
+                else:
+                    high_voltage_tariff = 6.2
+                form_data = {
+                    'pub_date': pub_date,
+                    'begin_tariff_period': begin_tariff_period,
+                    'end_tariff_period': end_tariff_period,
+                    'high_voltage_tariff': high_voltage_tariff,
+                    'medium_voltage_tariff_1': medium_voltage_tariff_1,
+                    'medium_voltage_tariff_2': medium_voltage_tariff_2,
+                    'low_voltage_tariff': low_voltage_tariff,
+                    'urban_tariff_1': urban_tariff_1,
+                    'urban_tariff_2': urban_tariff_2,
+                    'urban_tariff_3': urban_tariff_3,
+                    'rural_tariff_1': rural_tariff_1,
+                    'rural_tariff_2': rural_tariff_2,
+                    'rural_tariff_3': rural_tariff_3,
+                }
+                response = self.authorized_client.post(reverse_name,
+                                                       data=form_data,
+                                                       follow=True,)
+                self.assertRedirects(response, reverse_redirect)
+                self.assertEqual(Tariff.objects.count(), tariff_count)
+                if reverse_name == reverse('accounting:tariff_create'):
+                    self.assertTrue(Tariff.objects.filter(high_voltage_tariff = 5.2).exists())
+                else:
+                    self.assertTrue(Tariff.objects.filter(high_voltage_tariff = 6.2).exists())
+
+    def test_create_and_edit_calclation(self):
+        """A valid form creates and edit a calculation."""
+        calculation_count = Calculation.objects.count()
+        templates_pages_names = [
+            reverse('accounting:add_calculation', kwargs={'point_id': f'{self.point.id}'}),
+            reverse('accounting:calculation_edit', kwargs={'point_id': f'{self.point.id}', 'calculation_id': f'{self.calculation.id}'}),
+        ]
+        reverse_redirect = reverse('accounting:point_detail', kwargs={'point_id': f'{self.point.id}'})
+        point = self.point
+        meter = self.meter
+        entry_date = '2001-03-01'
+        previous_entry_date = '2001-02-01'
+        previous_readings = 12345.67
+        difference_readings = 45.0
+        transformation_coefficient = 1
+        amount = 45.0
+        deductible_amount = 0
+        losses = 10
+        constant_losses = 1
+        result_amount = 39.5
+        tariff1 = 7.0
+        tariff2 = 7.0
+        tariff3 = 7.0
+        margin = 1
+        accrued = 316.0
+        accrued_NDS = 379.2
+        for reverse_name in templates_pages_names:
+            with self.subTest(reverse_name=reverse_name):
+                if reverse_name == reverse('accounting:add_calculation', kwargs={'point_id': f'{self.point.id}'}):
+                    readings = 20000.67
+                    calculation_count += 1
+                else:
+                    readings = 22222.67
+                form_data = {
+                    'point': point,
+                    'meter': meter,
+                    'entry_date': entry_date,
+                    'readings': readings,
+                    'previous_entry_date': previous_entry_date,
+                    'previous_readings': previous_readings,
+                    'difference_readings': difference_readings,
+                    'transformation_coefficient': transformation_coefficient,
+                    'amount': amount,
+                    'deductible_amount': deductible_amount,
+                    'losses': losses,
+                    'constant_losses': constant_losses,
+                    'result_amount': result_amount,
+                    'tariff1': tariff1,
+                    'tariff2': tariff2,
+                    'tariff3': tariff3,
+                    'margin': margin,
+                    'accrued': accrued,
+                    'accrued_NDS': accrued_NDS,
+                }
+                response = self.authorized_client.post(reverse_name,
+                                                       data=form_data,
+                                                       follow=True,)
+                self.assertRedirects(response, reverse_redirect)
+                self.assertEqual(Calculation.objects.count(), calculation_count)
+                if reverse_name == reverse('accounting:add_calculation', kwargs={'point_id': f'{self.point.id}'}):
+                    self.assertTrue(Calculation.objects.filter(readings = 20000.67).exists())
+                else:
+                    self.assertTrue(Calculation.objects.filter(readings = 22222.67).exists())
+
+    def test_create_and_edit_point_nonauthorized_user(self):
+        """Pages for creating and editing a point not available to an unauthorized user.
+        """
+        templates_pages_names = [
+            reverse('accounting:point_create', kwargs={'contract_id': f'{self.contract.id}'}),
+            reverse('accounting:point_edit', kwargs={'point_id': f'{self.point.id}'}),
+            reverse('accounting:meter_create', kwargs={'point_id': f'{self.point.id}'}),
+            reverse('accounting:meter_edit', kwargs={'point_id': f'{self.point.id}', 'meter_id': f'{self.meter.id}'}),
+            reverse('accounting:transformer_create', kwargs={'point_id': f'{self.point.id}'}),
+            reverse('accounting:transformer_edit', kwargs={'point_id': f'{self.point.id}', 'transformer_id': f'{self.transformer.id}'}),
+            reverse('accounting:tariff_create'),
+            reverse('accounting:tariff_edit', kwargs={'tariff_id': f'{self.tariff.id}'}),
+            reverse('accounting:add_calculation', kwargs={'point_id': f'{self.point.id}'}),
+            reverse('accounting:calculation_edit', kwargs={'point_id': f'{self.point.id}', 'calculation_id': f'{self.calculation.id}'}),
+        ]
+        for reverse_name in templates_pages_names:
+            with self.subTest(reverse_name=reverse_name):
+                response = self.guest_client.get(reverse_name)
+                self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+    def test_create_comment_for_point(self):
+        """A valid form creates a comment on the accounting point"""
+        comment_count = Comment.objects.count()
+        reverse_name = reverse('accounting:comment_point_create', kwargs={'point_id': f'{self.point.id}'})
+        reverse_redirect = reverse('accounting:point_detail', kwargs={'point_id': f'{self.point.id}'})
+        form_data = {'text': 'test_comment',}
+        response = self.authorized_client.post(reverse_name,
+                                               data=form_data,
+                                               follow=True,)
+        self.assertRedirects(response, reverse_redirect)
+        self.assertEqual(Comment.objects.count(), comment_count + 1)
+        self.assertContains(response, 'test_comment')
+    
+    def test_do_not_create_comment_for_point(self):
+        """A valid form do not creates a comment on the accounting point"""
+        comment_count = Comment.objects.count()
+        reverse_name = reverse('accounting:comment_point_create', kwargs={'point_id': f'{self.point.id}'})
+        form_data = {'text': 'test_comment',}
+        response = self.guest_client.post(reverse_name,
+                                          data=form_data,
+                                          follow=True,)
+        self.assertEqual(Comment.objects.count(), comment_count)
+        self.assertNotContains(response, 'test_comment')

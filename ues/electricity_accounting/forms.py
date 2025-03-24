@@ -124,9 +124,9 @@ class DocumentForm(forms.ModelForm):
 
 class InterconnectedPointsForm(forms.ModelForm):
     lower_point = forms.ModelChoiceField(
-        label='Нижестоящая точка учёта',
+        label='Выберите нижестоящую точку учёта',
         queryset=ElectricityMeteringPoint.objects.all(),
-        help_text='Объём потребленной электроэнрегии нижестоящей точки учета вычитается из объёма потреблённой электроэнергии вышестоящей точки учёта.'
+        help_text='Объём потребленной электроэнрегии нижестоящей точки учета будет вычитается из объёма потреблённой электроэнергии вышестоящей точки учёта.'
     )
     class Meta:
         model = InterconnectedPoints

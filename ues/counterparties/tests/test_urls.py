@@ -5,7 +5,6 @@ import tempfile
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 
@@ -97,7 +96,6 @@ class CounterpartiesURLTests(TestCase):
 
     def test_urls(self):
         """Access to the page and the template depends on the user."""
-        cache.clear()
         templates_url_names = {
             f'/counterparties/contract_detail/{self.contract.id}/document_create/': 'counterparties/contract_detail.html',
             f'/counterparties/contract_detail/{self.contract.id}/document/{self.document.id}/delete/': 'counterparties/contract_detail.html',
@@ -174,11 +172,35 @@ class CounterpartiesURLTests(TestCase):
                     self.assertEqual(response.status_code, HTTPStatus.OK)
                     self.assertTemplateUsed(response, template)
 
+    def test_urls_authorized_client(self):
+        """Access to the page and the template depends on the user."""
+        templates_url_names = {
+            f'/counterparties/contract_detail/{self.contract.id}/document_create/': 'counterparties/contract_detail.html',
+            f'/counterparties/contract_detail/{self.contract.id}/document/{self.document.id}/delete/': 'counterparties/contract_detail.html',
+            f'/counterparties/{self.counterparty.id}/contract_create/': 'counterparties/contract_create.html',
+            f'/counterparties/contract_detail/{self.contract.id}/':'counterparties/contract_detail.html',
+            f'/counterparties/contract_detail/{self.contract.id}/edit/': 'counterparties/contract_create.html',
+            '/counterparties/contracts_list/': 'counterparties/contracts_list.html',
+            '/counterparties/create/': 'counterparties/counterparty_create.html',
+            f'/counterparties/{self.counterparty.id}/': 'counterparties/counterperty_detail.html',
+            f'/counterparties/{self.counterparty.id}/edit/': 'counterparties/counterparty_create.html',
+            '/counterparties/counterparties_list/': 'counterparties/counterparties_list.html',
+            f'/counterparties/contract_detail/{self.contract.id}/comments/create/': 'counterparties/contract_detail.html',
+            f'/counterparties/contract_detail/{self.contract.id}/comments/{self.contract_comment.id}/edit/': 'counterparties/comment_edit.html',
+            f'/counterparties/contract_detail/{self.contract.id}/comments/{self.contract_comment.id}/delete/':'counterparties/contract_detail.html',
+            f'/counterparties/{self.counterparty.id}/comments/create/': 'counterparties/counterperty_detail.html',
+            f'/counterparties/{self.counterparty.id}/comments/{self.counterparty_comment.id}/edit/': 'counterparties/comment_edit.html',
+            f'/counterparties/{self.counterparty.id}/comments/{self.counterparty_comment.id}/delete/': 'counterparties/counterperty_detail.html',
+            f'/counterparties/{self.counterparty.id}/contract_detail/{self.contract.id}/delete/': 'counterparties/contract_detail.html',
+            f'/counterparties/{self.counterparty.id}/delete/': 'counterparties/counterperty_detail.html',
+        }
+        for address, template in templates_url_names.items():
+            with self.subTest(address=address):
                 response = self.authorized_client.get(address)
                 if address == f'/counterparties/contract_detail/{self.contract.id}/document_create/':
                     self.assertRedirects(response, f'/counterparties/contract_detail/{self.contract.id}/')
                 elif address == f'/counterparties/contract_detail/{self.contract.id}/document/{self.document.id}/delete/':
-                    self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)  # Actually, I was expecting a redirect here.
+                    self.assertRedirects(response, f'/counterparties/contract_detail/{self.contract.id}/')
                 elif address == f'/counterparties/contract_detail/{self.contract.id}/comments/create/':
                     self.assertRedirects(response, f'/counterparties/contract_detail/{self.contract.id}/')
                 elif address == f'/counterparties/contract_detail/{self.contract.id}/comments/{self.contract_comment.id}/edit/':
@@ -188,13 +210,13 @@ class CounterpartiesURLTests(TestCase):
                 elif address == f'/counterparties/{self.counterparty.id}/comments/{self.counterparty_comment.id}/edit/':
                     self.assertRedirects(response, f'/counterparties/{self.counterparty.id}/')
                 elif address == f'/counterparties/{self.counterparty.id}/comments/{self.counterparty_comment.id}/delete/':
-                    self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)  # Actually, I was expecting a redirect here.
+                    self.assertRedirects(response, f'/counterparties/{self.counterparty.id}/')
                 elif address == f'/counterparties/contract_detail/{self.contract.id}/comments/{self.contract_comment.id}/delete/':
-                    self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)  # Actually, I was expecting a redirect here.
+                    self.assertRedirects(response, f'/counterparties/contract_detail/{self.contract.id}/')
                 elif address == f'/counterparties/{self.counterparty.id}/contract_detail/{self.contract.id}/delete/':
-                    self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)  # Actually, I was expecting a redirect here.
+                    self.assertRedirects(response, f'/counterparties/{self.counterparty.id}/')
                 elif address == f'/counterparties/{self.counterparty.id}/delete/':
-                    self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)  # Actually, I was expecting a redirect here.
+                    self.assertRedirects(response, '/counterparties/counterparties_list/')
                 else:
                     self.assertEqual(response.status_code, HTTPStatus.OK)
                     self.assertTemplateUsed(response, template)

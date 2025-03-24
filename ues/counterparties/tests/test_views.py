@@ -6,7 +6,6 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -109,7 +108,6 @@ class CounterpartiesPagesTests(TestCase):
 
     def test_pages_uses_correct_template(self):
         """The URL uses the appropriate template."""
-        cache.clear()
         template_pages_names = {
             reverse('counterparties:contract_create',
                     kwargs={'counterparty_id': f'{self.counterparty.id}'}
@@ -150,7 +148,6 @@ class CounterpartiesPagesTests(TestCase):
         """contract_create and contract_edit templates formed with the
         right context.
         """
-        cache.clear()
         template_pages_names = [
             reverse('counterparties:contract_create',
                     kwargs={'counterparty_id': f'{self.counterparty.id}'}),
@@ -195,7 +192,6 @@ class CounterpartiesPagesTests(TestCase):
 
     def test_contracts_list_show_correct_context(self):
         """contract_list template formed with the right context."""
-        cache.clear()
         template_pages_names = [
             reverse('counterparties:contracts_list'),
         ]
@@ -222,7 +218,6 @@ class CounterpartiesPagesTests(TestCase):
         """counterparty_create and counterparty_edit templates formed with
         the right context.
         """
-        cache.clear()
         template_pages_names = [
             reverse('counterparties:counterparty_create'),
             reverse('counterparties:counterparty_edit',
@@ -277,7 +272,6 @@ class CounterpartiesPagesTests(TestCase):
 
     def test_counterparties_list_show_correct_context(self):
         """counterparty_list template formed with the right context."""
-        cache.clear()
         template_pages_names = [
             reverse('counterparties:counterparties_list'),
         ]
@@ -309,7 +303,6 @@ class CounterpartiesPagesTests(TestCase):
 
     def test_comment_edit_show_correct_context(self):
         """comment_edit template formed with the right context."""
-        cache.clear()
         template_pages_names = [
             reverse('counterparties:comment_contract_edit',
                     kwargs={'contract_id': f'{self.contract.id}',
@@ -366,7 +359,6 @@ class PaginatorViewsTest(TestCase):
 
     def test_first_page_counterparties_records(self):
         """Checking the number of counterparties on the first and last pages"""
-        cache.clear()
         response_first_page = self.guest_client.get(reverse('counterparties:counterparties_list'))
         self.assertEqual(len(response_first_page.context['page_obj']), NUMBER_OF_OUTPUT_COUNTERPARTIES)
         response_last_page = self.guest_client.get(reverse('counterparties:counterparties_list') + '?page=-1')
@@ -374,7 +366,6 @@ class PaginatorViewsTest(TestCase):
 
     def test_first_page_contracts_records(self):
         """Checking the number of contracts on the first and last pages"""
-        cache.clear()
         response_first_page = self.guest_client.get(reverse('counterparties:contracts_list'))
         self.assertEqual(len(response_first_page.context['page_obj']), NUMBER_OF_OUTPUT_CONTRACTS)
         response_last_page = self.guest_client.get(reverse('counterparties:contracts_list') + '?page=-1')

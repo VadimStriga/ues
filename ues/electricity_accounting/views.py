@@ -85,7 +85,7 @@ def meter_edit(request, point_id, meter_id):
     form = ElectricityMeterForm(
         request.POST or None,
         files=request.FILES or None,
-        instance=meter
+        instance=meter,
     )
     if form.is_valid():
         form.save()
@@ -317,13 +317,14 @@ def add_calculation(request, point_id):
             calculation.tariff1, calculation.tariff2, calculation.tariff3, is_population = get_calculation_tariff(point_id, entry_date)
             calculation.margin = point.margin
             calculation.accrued = get_calculation_accrued(calculation.result_amount,
-                                                      calculation.tariff1,
-                                                      calculation.tariff2,
-                                                      calculation.tariff3,
-                                                      calculation.margin)
+                                                          calculation.tariff1,
+                                                          calculation.tariff2,
+                                                          calculation.tariff3,
+                                                          calculation.margin)
             calculation.accrued_NDS = round((calculation.accrued + calculation.accrued * NDS / 100), 2)
             calculation.save()
             return redirect('accounting:point_detail', point_id = point_id)
+        return redirect('accounting:point_detail', point_id = point_id)
     except IndexError:
         return redirect('accounting:point_detail', point_id = point_id)
 
