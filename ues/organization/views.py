@@ -16,7 +16,7 @@ def organization_create(request):
     if form.is_valid():
         organization = form.save(commit=False)
         organization.save()
-        return redirect('organization:organization_detail', organization_id=organization.id)
+        return redirect('organization:organization_detail')
     context = {
         'form': form,
     }

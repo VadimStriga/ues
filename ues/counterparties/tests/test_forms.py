@@ -111,7 +111,7 @@ class CounterpartyCreateForm(TestCase):
         self.guest_client = Client()
 
     def test_edit_counterparty(self):
-        """A valid form creates and edits a counterparty."""
+        """A valid form edits a counterparty."""
         counterparty_count = Counterparty.objects.count()
         full_name = 'Test_Edit_Company',
         short_name = 'TEC',
